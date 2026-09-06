@@ -466,17 +466,8 @@
     <section class="slide">
       <div class="slide-eyebrow">01 · 기초</div>
       <h2 class="slide-title">출력 크기를 결정하는 <span class="accent">네 숫자</span></h2>
-      <div class="slide-body split">
-        <div class="col">
-          <div class="formula-strip">출력 크기 = ⌊ (N + 2P − F) / S ⌋ + 1</div>
-          <ul class="bullets tight">
-            <li>N=7, F=3, S=1, P=0 → (7−3)/1+1 = <b>5</b> &nbsp;·&nbsp; S=2 → <b>3</b></li>
-            <li>P=(F−1)/2로 두면 입력과 출력 크기가 같다(3×3→P1, 5×5→P2, 7×7→P3).</li>
-            <li>깊이는 별개 규칙: 출력 깊이 = <b>필터 개수 K</b>.</li>
-          </ul>
-        </div>
-        <div class="col">
-          <figure class="dslide">
+      <div class="slide-body top">
+          <figure class="dslide" style="margin-bottom:.6%">
             <svg viewBox="0 0 600 245" role="img" aria-label="9x9로 패딩된 7x7 입력 위에서 3x3 필터가 스트라이드 1칸으로 이동해 7x7 출력을 만드는 과정과 N, F, S, P 네 변수의 의미">
               <defs>
                 <pattern id="pgdN2" width="20" height="20" patternUnits="userSpaceOnUse">
@@ -516,7 +507,10 @@
               <text x="424" y="135" class="dg-label">S = 1 — 필터 이동 칸 수</text>
             </svg>
           </figure>
-        </div>
+          <div class="formula-strip" style="font-size:1.05vw;padding:.7% 1%">출력 크기 = ⌊ (N + 2P − F) / S ⌋ + 1</div>
+          <ul class="bullets tight" style="margin-top:.6%">
+            <li>N=7, F=3, S=1, P=0 → (7−3)/1+1 = <b>5</b> &nbsp;·&nbsp; S=2 → <b>3</b> &nbsp;·&nbsp; 깊이는 별개 규칙(출력 깊이 = <b>필터 개수 K</b>)</li>
+          </ul>
       </div>
     </section>
 
@@ -524,20 +518,9 @@
     <section class="slide">
       <div class="slide-eyebrow">01 · 기초</div>
       <h2 class="slide-title">차원이 바뀔 때 <span class="accent">몇 개를 학습하나</span></h2>
-      <div class="slide-body split">
-        <div class="col">
-          <div class="formula-strip">파라미터 수 = (F × F × C + 1) × K
-            <span class="note">가중치 공유 덕분에 공간 위치 수와는 무관하다</span>
-          </div>
-          <div class="stat-row" style="margin-top:1%">
-            <span class="stat-pill">32×32×3→5×5×3×6,S1,P0→<b>28×28×6</b>·<b>456</b></span>
-            <span class="stat-pill">28×28×6→5×5×6×10→<b>24×24×10</b>·<b>1,510</b></span>
-            <span class="stat-pill">AlexNet CONV1→<b>55×55×96</b>·<b>34,944</b></span>
-          </div>
-        </div>
-        <div class="col">
-          <figure class="dslide">
-            <svg viewBox="0 0 400 145" role="img" aria-label="입력 32x32x3에 5x5x3 필터 하나가 6개 사용되어 출력 28x28x6을 만드는 과정. F는 필터 크기, C는 입력 채널, K는 필터 개수">
+      <div class="slide-body top">
+          <figure class="dslide" style="margin-bottom:.6%">
+            <svg viewBox="0 0 640 155" role="img" aria-label="입력 32x32x3에 5x5x3 필터 하나가 6개 사용되어 출력 28x28x6을 만드는 과정과 F, C, K 세 변수의 의미">
               <defs>
                 <pattern id="pgdF2" width="11" height="11" patternUnits="userSpaceOnUse">
                   <path d="M11 0 0 0 0 11" class="dg-grid-stroke" style="stroke-opacity:.3"/>
@@ -564,9 +547,26 @@
 
               <text x="290" y="30" text-anchor="middle" class="dg-heading">K = 6</text>
               <text x="290" y="100" text-anchor="middle" class="dg-label">출력 28×28×6</text>
+
+              <rect x="365" y="24" width="16" height="16" fill="url(#pgdF2)" stroke="var(--accent)" stroke-width="2"/>
+              <text x="389" y="36" class="dg-label">F = 5 — 필터가 한 번에 보는 가로·세로 크기</text>
+
+              <rect x="365" y="53" width="16" height="16" fill="var(--accent-warm-soft)" fill-opacity=".8" stroke="var(--ink)" stroke-opacity=".3"/>
+              <text x="389" y="65" class="dg-label">C = 3 — 입력 채널 수(필터 깊이가 여기 자동으로 맞춰짐)</text>
+
+              <rect x="365" y="80" width="16" height="6" fill="var(--accent)" fill-opacity=".22" stroke="var(--accent)" stroke-opacity=".6"/>
+              <rect x="365" y="88" width="16" height="6" fill="var(--accent)" fill-opacity=".34" stroke="var(--accent)" stroke-opacity=".6"/>
+              <text x="389" y="97" class="dg-label">K = 6 — 사용하는 필터 개수(출력 채널 수를 그대로 결정)</text>
             </svg>
           </figure>
-        </div>
+          <div class="formula-strip" style="font-size:1.05vw;padding:.7% 1%">파라미터 수 = (F × F × C + 1) × K
+            <span class="note">가중치 공유 덕분에 공간 위치 수와는 무관하다</span>
+          </div>
+          <div class="stat-row" style="margin-top:.8%">
+            <span class="stat-pill">32×32×3→5×5×3×6,S1,P0→<b>28×28×6</b>·<b>456</b></span>
+            <span class="stat-pill">28×28×6→5×5×6×10→<b>24×24×10</b>·<b>1,510</b></span>
+            <span class="stat-pill">AlexNet CONV1→<b>55×55×96</b>·<b>34,944</b></span>
+          </div>
       </div>
     </section>
 

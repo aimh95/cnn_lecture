@@ -978,7 +978,7 @@
 
         <figure class="diagram">
           <div class="diagram-frame">
-          <svg viewBox="0 0 400 145" role="img" aria-label="입력 32x32x3에 5x5x3 필터 하나가 6개 사용되어 출력 28x28x6을 만드는 과정. F는 필터 크기, C는 입력 채널, K는 필터 개수">
+          <svg viewBox="0 0 640 155" role="img" aria-label="입력 32x32x3에 5x5x3 필터 하나가 6개 사용되어 출력 28x28x6을 만드는 과정과 F, C, K 세 변수의 의미">
             <defs>
               <pattern id="pgdF" width="11" height="11" patternUnits="userSpaceOnUse">
                 <path d="M11 0 0 0 0 11" class="dg-grid-stroke" style="stroke-opacity:.3"/>
@@ -1009,6 +1009,16 @@
 
             <text x="290" y="30" text-anchor="middle" class="dg-heading">K = 6</text>
             <text x="290" y="100" text-anchor="middle" class="dg-label">출력 28×28×6</text>
+
+            <rect x="365" y="24" width="16" height="16" fill="url(#pgdF)" stroke="var(--accent)" stroke-width="2"/>
+            <text x="389" y="36" class="dg-label">F = 5 — 필터가 한 번에 보는 가로·세로 크기</text>
+
+            <rect x="365" y="53" width="16" height="16" fill="var(--accent-warm-soft)" fill-opacity=".8" stroke="var(--ink)" stroke-opacity=".3"/>
+            <text x="389" y="65" class="dg-label">C = 3 — 입력 채널 수(필터 깊이가 여기 자동으로 맞춰짐)</text>
+
+            <rect x="365" y="80" width="16" height="6" fill="var(--accent)" fill-opacity=".22" stroke="var(--accent)" stroke-opacity=".6"/>
+            <rect x="365" y="88" width="16" height="6" fill="var(--accent)" fill-opacity=".34" stroke="var(--accent)" stroke-opacity=".6"/>
+            <text x="389" y="97" class="dg-label">K = 6 — 사용하는 필터 개수(출력 채널 수를 그대로 결정)</text>
           </svg>
           </div>
           <figcaption>필터 하나의 모양은 F×F×C(5×5×3)입니다 — 깊이 C는 입력 채널 수에 자동으로 맞춰집니다. 32×32×3 입력에 이런 필터를 K개(6개) 사용하면 파라미터는 (5×5×3+1)×6 = 456개이고, <b>출력은 28×28×6</b>이 됩니다(공간 크기 28은 위 출력 크기 공식으로 계산).</figcaption>
