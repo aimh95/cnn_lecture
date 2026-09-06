@@ -466,13 +466,50 @@
     <section class="slide">
       <div class="slide-eyebrow">01 · 기초</div>
       <h2 class="slide-title">출력 크기를 결정하는 <span class="accent">네 숫자</span></h2>
-      <div class="slide-body">
-        <div class="formula-strip">출력 크기 = ⌊ (N + 2P − F) / S ⌋ + 1</div>
-        <ul class="bullets tight">
-          <li>N=7, F=3, S=1, P=0 → (7−3)/1+1 = <b>5</b> &nbsp;·&nbsp; S=2 → <b>3</b> &nbsp;·&nbsp; S=3 → 2.33 (부적합)</li>
-          <li>스트라이드 1·필터 홀수 F에서 P=(F−1)/2로 두면 입력과 출력 크기가 같다 (3×3→P1, 5×5→P2, 7×7→P3).</li>
-          <li>깊이는 별개 규칙: 출력 깊이 = <b>필터 개수 K</b>. 필터의 깊이는 입력 채널 수에 자동으로 맞춰진다.</li>
-        </ul>
+      <div class="slide-body split">
+        <div class="col">
+          <div class="formula-strip">출력 크기 = ⌊ (N + 2P − F) / S ⌋ + 1</div>
+          <ul class="bullets tight">
+            <li>N=7, F=3, S=1, P=0 → (7−3)/1+1 = <b>5</b> &nbsp;·&nbsp; S=2 → <b>3</b></li>
+            <li>P=(F−1)/2로 두면 입력과 출력 크기가 같다(3×3→P1, 5×5→P2, 7×7→P3).</li>
+            <li>깊이는 별개 규칙: 출력 깊이 = <b>필터 개수 K</b>.</li>
+          </ul>
+        </div>
+        <div class="col">
+          <figure class="dslide">
+            <svg viewBox="0 0 460 245" role="img" aria-label="9x9로 패딩된 7x7 입력 위에서 3x3 필터가 스트라이드 1칸으로 이동하는 모습과 N, F, S, P 네 변수의 의미">
+              <defs>
+                <pattern id="pgdN2" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M20 0 0 0 0 20" class="dg-grid-stroke" style="stroke-opacity:.25"/>
+                </pattern>
+              </defs>
+              <text x="90" y="16" text-anchor="middle" class="dg-value" style="fill:var(--accent)">S=1</text>
+              <g style="color:var(--accent)"><path d="M85,22 L115,22" class="dg-line-accent" marker-end="url(#arrow)"/></g>
+
+              <rect x="60" y="30" width="180" height="180" fill="var(--accent-warm-soft)" fill-opacity=".4"/>
+              <rect x="80" y="50" width="140" height="140" fill="url(#pgdN2)"/>
+              <rect x="80" y="50" width="140" height="140" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <rect x="60" y="30" width="180" height="180" fill="none" stroke="var(--accent-warm)" stroke-width="2" stroke-dasharray="5 4"/>
+
+              <rect x="60" y="30" width="60" height="60" fill="var(--accent)" fill-opacity=".22" stroke="var(--accent)" stroke-width="2.4"/>
+              <rect x="80" y="30" width="60" height="60" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>
+
+              <text x="150" y="228" text-anchor="middle" class="dg-label">N = 7 (패딩을 뺀 원래 입력)</text>
+
+              <rect x="270" y="42" width="16" height="16" fill="var(--accent-warm-soft)" fill-opacity=".8" stroke="var(--ink)" stroke-opacity=".3"/>
+              <text x="294" y="54" class="dg-label">P = 1 — 테두리 패딩 두께</text>
+
+              <rect x="270" y="69" width="16" height="16" fill="var(--paper-raised)" stroke="var(--accent)" stroke-width="2"/>
+              <text x="294" y="81" class="dg-label">N = 7 — 패딩 뺀 입력 크기</text>
+
+              <rect x="270" y="96" width="16" height="16" fill="var(--accent)" fill-opacity=".22" stroke="var(--accent)" stroke-width="2"/>
+              <text x="294" y="108" class="dg-label">F = 3 — 필터 크기</text>
+
+              <rect x="270" y="123" width="16" height="16" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>
+              <text x="294" y="135" class="dg-label">S = 1 — 필터 이동 칸 수</text>
+            </svg>
+          </figure>
+        </div>
       </div>
     </section>
 
@@ -480,14 +517,47 @@
     <section class="slide">
       <div class="slide-eyebrow">01 · 기초</div>
       <h2 class="slide-title">차원이 바뀔 때 <span class="accent">몇 개를 학습하나</span></h2>
-      <div class="slide-body">
-        <div class="formula-strip">파라미터 수 = (F × F × C + 1) × K
-          <span class="note">가중치 공유 덕분에 공간 위치 수와는 무관하다</span>
+      <div class="slide-body split">
+        <div class="col">
+          <div class="formula-strip">파라미터 수 = (F × F × C + 1) × K
+            <span class="note">가중치 공유 덕분에 공간 위치 수와는 무관하다</span>
+          </div>
+          <div class="stat-row" style="margin-top:1%">
+            <span class="stat-pill">32×32×3→5×5×3×6,S1,P0→<b>28×28×6</b>·<b>456</b></span>
+            <span class="stat-pill">28×28×6→5×5×6×10→<b>24×24×10</b>·<b>1,510</b></span>
+            <span class="stat-pill">AlexNet CONV1→<b>55×55×96</b>·<b>34,944</b></span>
+          </div>
         </div>
-        <div class="stat-row">
-          <span class="stat-pill">32×32×3 → 5×5×3 ×6, S1,P0 → <b>28×28×6</b> · 파라미터 <b>456</b></span>
-          <span class="stat-pill">28×28×6 → 5×5×6 ×10 → <b>24×24×10</b> · 파라미터 <b>1,510</b></span>
-          <span class="stat-pill">AlexNet CONV1: 227×227×3 → 11×11×3 ×96,S4 → <b>55×55×96</b> · 파라미터 <b>34,944</b></span>
+        <div class="col">
+          <figure class="dslide">
+            <svg viewBox="0 0 400 145" role="img" aria-label="5x5x3 필터 하나가 6개 사용되어 출력 깊이 6을 만드는 과정. F는 필터 크기, C는 입력 채널, K는 필터 개수">
+              <defs>
+                <pattern id="pgdF2" width="11" height="11" patternUnits="userSpaceOnUse">
+                  <path d="M11 0 0 0 0 11" class="dg-grid-stroke" style="stroke-opacity:.3"/>
+                </pattern>
+              </defs>
+              <rect x="108" y="30" width="55" height="55" fill="var(--accent-warm-soft)" fill-opacity=".6" stroke="var(--ink)" stroke-opacity=".3"/>
+              <line x1="90" y1="47" x2="108" y2="30" class="dg-line" style="stroke-opacity:.5"/>
+              <line x1="145" y1="47" x2="163" y2="30" class="dg-line" style="stroke-opacity:.5"/>
+              <rect x="90" y="47" width="55" height="55" fill="url(#pgdF2)" stroke="var(--accent)" stroke-width="2"/>
+
+              <text x="117" y="122" text-anchor="middle" class="dg-label">F × F (5×5)</text>
+              <text x="168" y="38" text-anchor="start" class="dg-label" style="fill:var(--accent-warm)">C = 3 (입력 채널)</text>
+
+              <g style="color:var(--accent)"><path d="M172,75 L228,75" class="dg-line-accent" marker-end="url(#arrow)"/></g>
+              <text x="200" y="66" text-anchor="middle" class="dg-value">필터 6개</text>
+
+              <rect x="245" y="40" width="90" height="9" fill="var(--accent)" fill-opacity=".14" stroke="var(--accent)" stroke-opacity=".6"/>
+              <rect x="245" y="47" width="90" height="9" fill="var(--accent)" fill-opacity=".18" stroke="var(--accent)" stroke-opacity=".6"/>
+              <rect x="245" y="54" width="90" height="9" fill="var(--accent)" fill-opacity=".22" stroke="var(--accent)" stroke-opacity=".6"/>
+              <rect x="245" y="61" width="90" height="9" fill="var(--accent)" fill-opacity=".26" stroke="var(--accent)" stroke-opacity=".6"/>
+              <rect x="245" y="68" width="90" height="9" fill="var(--accent)" fill-opacity=".30" stroke="var(--accent)" stroke-opacity=".6"/>
+              <rect x="245" y="75" width="90" height="9" fill="var(--accent)" fill-opacity=".34" stroke="var(--accent)" stroke-opacity=".6"/>
+
+              <text x="290" y="30" text-anchor="middle" class="dg-heading">K = 6</text>
+              <text x="290" y="100" text-anchor="middle" class="dg-label">출력 깊이 6</text>
+            </svg>
+          </figure>
         </div>
       </div>
     </section>
@@ -496,11 +566,46 @@
     <section class="slide">
       <div class="slide-eyebrow">01 · 기초</div>
       <h2 class="slide-title">조정하는 하이퍼파라미터 <span class="accent">네 가지</span></h2>
-      <div class="slide-body" style="flex-direction:row;gap:2%;">
-        <div class="arch-card" style="flex:1"><div class="arch-name mono" style="color:var(--accent)">F</div><div style="font-weight:600;margin:.6vw 0;font-size:1.15vw">필터 크기</div><div style="font-size:1.02vw;color:var(--ink-soft)">수용장 크기. 3×3·5×5·7×7·11×11 등 홀수 사용</div></div>
-        <div class="arch-card" style="flex:1"><div class="arch-name mono" style="color:var(--accent)">S</div><div style="font-weight:600;margin:.6vw 0;font-size:1.15vw">스트라이드</div><div style="font-size:1.02vw;color:var(--ink-soft)">필터 이동 칸 수. 클수록 출력 공간이 작아짐</div></div>
-        <div class="arch-card" style="flex:1"><div class="arch-name mono" style="color:var(--accent)">P</div><div style="font-weight:600;margin:.6vw 0;font-size:1.15vw">패딩</div><div style="font-size:1.02vw;color:var(--ink-soft)">테두리 제로 패딩 두께. 공간 크기 유지에 사용</div></div>
-        <div class="arch-card" style="flex:1"><div class="arch-name mono" style="color:var(--accent)">K</div><div style="font-weight:600;margin:.6vw 0;font-size:1.15vw">필터 개수</div><div style="font-size:1.02vw;color:var(--ink-soft)">출력 깊이(채널 수)를 결정</div></div>
+      <div class="slide-body top">
+        <div style="display:flex;flex-direction:row;gap:1.4%;margin-bottom:1.4%">
+          <div class="arch-card" style="flex:1"><div class="arch-name mono" style="color:var(--accent)">F</div><div style="font-weight:600;margin:.5vw 0;font-size:1.05vw">필터 크기</div><div style="font-size:.9vw;color:var(--ink-soft)">수용장 크기. 3×3·5×5·7×7·11×11 등 홀수 사용</div></div>
+          <div class="arch-card" style="flex:1"><div class="arch-name mono" style="color:var(--accent)">S</div><div style="font-weight:600;margin:.5vw 0;font-size:1.05vw">스트라이드</div><div style="font-size:.9vw;color:var(--ink-soft)">필터 이동 칸 수. 클수록 출력 공간이 작아짐</div></div>
+          <div class="arch-card" style="flex:1"><div class="arch-name mono" style="color:var(--accent)">P</div><div style="font-weight:600;margin:.5vw 0;font-size:1.05vw">패딩</div><div style="font-size:.9vw;color:var(--ink-soft)">테두리 제로 패딩 두께. 공간 크기 유지에 사용</div></div>
+          <div class="arch-card" style="flex:1"><div class="arch-name mono" style="color:var(--accent)">K</div><div style="font-weight:600;margin:.5vw 0;font-size:1.05vw">필터 개수</div><div style="font-size:.9vw;color:var(--ink-soft)">출력 깊이(채널 수)를 결정</div></div>
+        </div>
+        <figure class="dslide">
+          <svg viewBox="0 0 460 130" role="img" aria-label="네 하이퍼파라미터를 한눈에 보여주는 아이콘: F는 필터 크기, S는 스트라이드로 이동하는 두 위치, P는 테두리 패딩, K는 쌓인 필터 개수">
+            <defs>
+              <pattern id="pgdHp2" width="14" height="14" patternUnits="userSpaceOnUse">
+                <path d="M14 0 0 0 0 14" class="dg-grid-stroke" style="stroke-opacity:.3"/>
+              </pattern>
+            </defs>
+            <rect x="39" y="18" width="42" height="42" fill="url(#pgdHp2)" stroke="var(--accent)" stroke-width="2.4"/>
+            <text x="60" y="85" text-anchor="middle" class="dg-heading">F</text>
+            <text x="60" y="102" text-anchor="middle" class="dg-label">필터 크기</text>
+
+            <rect x="149" y="25" width="32" height="32" fill="var(--accent)" fill-opacity=".2" stroke="var(--accent)" stroke-width="2"/>
+            <rect x="167" y="25" width="32" height="32" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 3"/>
+            <g style="color:var(--accent)"><path d="M155,17 L178,17" class="dg-line-accent" marker-end="url(#arrow)"/></g>
+            <text x="170" y="85" text-anchor="middle" class="dg-heading">S</text>
+            <text x="170" y="102" text-anchor="middle" class="dg-label">스트라이드</text>
+
+            <rect x="255" y="18" width="50" height="50" fill="var(--accent-warm-soft)" fill-opacity=".5"/>
+            <rect x="265" y="28" width="30" height="30" fill="url(#pgdHp2)" stroke="var(--accent)" stroke-width="1.6"/>
+            <rect x="255" y="18" width="50" height="50" fill="none" stroke="var(--accent-warm)" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="280" y="85" text-anchor="middle" class="dg-heading">P</text>
+            <text x="280" y="102" text-anchor="middle" class="dg-label">패딩</text>
+
+            <rect x="365" y="20" width="50" height="7" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-opacity=".6"/>
+            <rect x="365" y="27" width="50" height="7" fill="var(--accent)" fill-opacity=".22" stroke="var(--accent)" stroke-opacity=".6"/>
+            <rect x="365" y="34" width="50" height="7" fill="var(--accent)" fill-opacity=".28" stroke="var(--accent)" stroke-opacity=".6"/>
+            <rect x="365" y="41" width="50" height="7" fill="var(--accent)" fill-opacity=".34" stroke="var(--accent)" stroke-opacity=".6"/>
+            <text x="390" y="85" text-anchor="middle" class="dg-heading">K</text>
+            <text x="390" y="102" text-anchor="middle" class="dg-label">필터 개수</text>
+
+            <text x="230" y="122" text-anchor="middle" class="dg-label">이 네 값이 출력의 모양과 파라미터 수를 함께 결정합니다.</text>
+          </svg>
+        </figure>
       </div>
     </section>
 
@@ -640,66 +745,86 @@
     <section class="slide">
       <div class="slide-eyebrow">02 · 풀링과 분류</div>
       <h2 class="slide-title">Flatten → FC → <span class="accent">Softmax</span></h2>
-      <div class="slide-body split">
-        <div class="col">
-          <ul class="bullets">
-            <li>합성곱·풀링을 반복하면 작은 여러 장의 특징 맵이 남는다 (예: 3×3×10 = 90개 값).</li>
-            <li>3차원 출력을 한 줄 벡터로 펴는 과정이 <b>flatten</b> — 값을 버리지 않고 모양만 바꾼다.</li>
-            <li>벡터를 완전연결층에 통과시키고, 클래스 수만큼 점수를 만든 뒤 <b>Softmax</b>로 확률 분포로 변환.</li>
-          </ul>
-          <div class="formula-strip" style="margin-top:1%">CONV+POOL = 특징 추출 &nbsp;→&nbsp; FC+Softmax = 최종 분류 결정</div>
-        </div>
-        <div class="col">
-          <figure class="dslide">
-            <svg viewBox="0 0 420 200" role="img" aria-label="2x2x2 3차원 텐서가 flatten을 거쳐 길이 8인 1차원 벡터로 펴지는 과정. 채널 1의 값 1~4와 채널 2의 값 5~8이 순서대로 나열된다">
-              <text x="65" y="16" text-anchor="middle" class="dg-heading">3D 텐서 (2×2×2)</text>
+      <div class="slide-body top">
+        <figure class="dslide" style="margin-bottom:.6%">
+          <svg viewBox="0 0 720 220" role="img" aria-label="2x2x2 3차원 텐서가 flatten으로 길이 8 벡터가 되고, 완전연결층을 거쳐 클래스별 점수가 되고, softmax를 거쳐 확률로 바뀌는 과정. 예시로 자동차 74%, 트럭 6%, 비행기 20%">
+            <text x="80" y="16" text-anchor="middle" class="dg-heading">3D 텐서 (2×2×2)</text>
 
-              <rect x="43" y="50" width="60" height="60" fill="var(--accent-warm-soft)" stroke="var(--ink)" stroke-opacity=".5"/>
-              <line x1="73" y1="50" x2="73" y2="110" stroke="var(--ink)" stroke-opacity=".3"/>
-              <line x1="43" y1="80" x2="103" y2="80" stroke="var(--ink)" stroke-opacity=".3"/>
+            <rect x="48" y="50" width="70" height="70" fill="var(--accent-warm-soft)" stroke="var(--ink)" stroke-opacity=".5"/>
+            <line x1="83" y1="50" x2="83" y2="120" stroke="var(--ink)" stroke-opacity=".3"/>
+            <line x1="48" y1="85" x2="118" y2="85" stroke="var(--ink)" stroke-opacity=".3"/>
 
-              <line x1="28" y1="66" x2="43" y2="50" class="dg-line" style="stroke-opacity:.5"/>
-              <line x1="88" y1="66" x2="103" y2="50" class="dg-line" style="stroke-opacity:.5"/>
-              <line x1="88" y1="126" x2="103" y2="110" class="dg-line" style="stroke-opacity:.5"/>
+            <line x1="30" y1="70" x2="48" y2="50" class="dg-line" style="stroke-opacity:.5"/>
+            <line x1="100" y1="70" x2="118" y2="50" class="dg-line" style="stroke-opacity:.5"/>
+            <line x1="100" y1="140" x2="118" y2="120" class="dg-line" style="stroke-opacity:.5"/>
 
-              <rect x="28" y="66" width="60" height="60" fill="var(--paper-raised)" class="dg-grid-stroke"/>
-              <line x1="58" y1="66" x2="58" y2="126" class="dg-grid-stroke" style="stroke-opacity:.4"/>
-              <line x1="28" y1="96" x2="88" y2="96" class="dg-grid-stroke" style="stroke-opacity:.4"/>
-              <text x="43" y="86" text-anchor="middle" class="dg-value">1</text>
-              <text x="73" y="86" text-anchor="middle" class="dg-value">2</text>
-              <text x="43" y="116" text-anchor="middle" class="dg-value">3</text>
-              <text x="73" y="116" text-anchor="middle" class="dg-value">4</text>
+            <rect x="30" y="70" width="70" height="70" fill="var(--paper-raised)" class="dg-grid-stroke"/>
+            <line x1="65" y1="70" x2="65" y2="140" class="dg-grid-stroke" style="stroke-opacity:.4"/>
+            <line x1="30" y1="105" x2="100" y2="105" class="dg-grid-stroke" style="stroke-opacity:.4"/>
+            <text x="47" y="92" text-anchor="middle" class="dg-value">1</text>
+            <text x="82" y="92" text-anchor="middle" class="dg-value">2</text>
+            <text x="47" y="127" text-anchor="middle" class="dg-value">3</text>
+            <text x="82" y="127" text-anchor="middle" class="dg-value">4</text>
 
-              <text x="58" y="140" text-anchor="middle" class="dg-label">채널 1</text>
-              <text x="110" y="56" text-anchor="start" class="dg-label" style="fill:var(--accent-warm)">채널 2 (5~8)</text>
+            <text x="65" y="155" text-anchor="middle" class="dg-label">채널 1</text>
+            <text x="128" y="58" text-anchor="start" class="dg-label" style="fill:var(--accent-warm)">채널 2 (5~8)</text>
 
-              <g style="color:var(--accent)">
-                <path d="M130,96 L190,96" class="dg-line-accent" marker-end="url(#arrow)"/>
-              </g>
-              <text x="160" y="88" text-anchor="middle" class="dg-value">flatten</text>
+            <g style="color:var(--accent)">
+              <path d="M150,105 L228,105" class="dg-line-accent" marker-end="url(#arrow)"/>
+            </g>
+            <text x="189" y="96" text-anchor="middle" class="dg-value">flatten</text>
 
-              <g>
-                <rect x="205" y="83" width="24" height="24" fill="var(--accent)" fill-opacity=".15" stroke="var(--accent)"/>
-                <rect x="229" y="83" width="24" height="24" fill="var(--accent)" fill-opacity=".15" stroke="var(--accent)"/>
-                <rect x="253" y="83" width="24" height="24" fill="var(--accent)" fill-opacity=".15" stroke="var(--accent)"/>
-                <rect x="277" y="83" width="24" height="24" fill="var(--accent)" fill-opacity=".15" stroke="var(--accent)"/>
-                <rect x="301" y="83" width="24" height="24" fill="var(--accent-warm)" fill-opacity=".18" stroke="var(--accent-warm)"/>
-                <rect x="325" y="83" width="24" height="24" fill="var(--accent-warm)" fill-opacity=".18" stroke="var(--accent-warm)"/>
-                <rect x="349" y="83" width="24" height="24" fill="var(--accent-warm)" fill-opacity=".18" stroke="var(--accent-warm)"/>
-                <rect x="373" y="83" width="24" height="24" fill="var(--accent-warm)" fill-opacity=".18" stroke="var(--accent-warm)"/>
-                <text x="217" y="99" text-anchor="middle" class="dg-value">1</text>
-                <text x="241" y="99" text-anchor="middle" class="dg-value">2</text>
-                <text x="265" y="99" text-anchor="middle" class="dg-value">3</text>
-                <text x="289" y="99" text-anchor="middle" class="dg-value">4</text>
-                <text x="313" y="99" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">5</text>
-                <text x="337" y="99" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">6</text>
-                <text x="361" y="99" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">7</text>
-                <text x="385" y="99" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">8</text>
-              </g>
-              <text x="295" y="128" text-anchor="middle" class="dg-label">펼친 벡터 (길이 8)</text>
-            </svg>
-          </figure>
-        </div>
+            <rect x="250" y="91" width="28" height="28" fill="var(--accent)" fill-opacity=".15" stroke="var(--accent)"/>
+            <rect x="278" y="91" width="28" height="28" fill="var(--accent)" fill-opacity=".15" stroke="var(--accent)"/>
+            <rect x="306" y="91" width="28" height="28" fill="var(--accent)" fill-opacity=".15" stroke="var(--accent)"/>
+            <rect x="334" y="91" width="28" height="28" fill="var(--accent)" fill-opacity=".15" stroke="var(--accent)"/>
+            <rect x="362" y="91" width="28" height="28" fill="var(--accent-warm)" fill-opacity=".18" stroke="var(--accent-warm)"/>
+            <rect x="390" y="91" width="28" height="28" fill="var(--accent-warm)" fill-opacity=".18" stroke="var(--accent-warm)"/>
+            <rect x="418" y="91" width="28" height="28" fill="var(--accent-warm)" fill-opacity=".18" stroke="var(--accent-warm)"/>
+            <rect x="446" y="91" width="28" height="28" fill="var(--accent-warm)" fill-opacity=".18" stroke="var(--accent-warm)"/>
+            <text x="264" y="109" text-anchor="middle" class="dg-value">1</text>
+            <text x="292" y="109" text-anchor="middle" class="dg-value">2</text>
+            <text x="320" y="109" text-anchor="middle" class="dg-value">3</text>
+            <text x="348" y="109" text-anchor="middle" class="dg-value">4</text>
+            <text x="376" y="109" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">5</text>
+            <text x="404" y="109" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">6</text>
+            <text x="432" y="109" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">7</text>
+            <text x="460" y="109" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">8</text>
+            <text x="362" y="140" text-anchor="middle" class="dg-label">펼친 벡터 (길이 8)</text>
+
+            <text x="507" y="24" text-anchor="middle" class="dg-heading">FC (완전연결)</text>
+            <polygon points="474,91 540,41 540,165 474,119" fill="var(--accent)" fill-opacity=".08"/>
+            <line x1="474" y1="105" x2="540" y2="57" class="dg-line" style="stroke-opacity:.4"/>
+            <line x1="474" y1="105" x2="540" y2="103" class="dg-line" style="stroke-opacity:.4"/>
+            <line x1="474" y1="105" x2="540" y2="149" class="dg-line" style="stroke-opacity:.4"/>
+
+            <circle cx="540" cy="57" r="16" class="dg-node"/>
+            <circle cx="540" cy="103" r="16" class="dg-node"/>
+            <circle cx="540" cy="149" r="16" class="dg-node"/>
+            <text x="540" y="61" text-anchor="middle" class="dg-value">2.1</text>
+            <text x="540" y="107" text-anchor="middle" class="dg-value">-0.5</text>
+            <text x="540" y="153" text-anchor="middle" class="dg-value">0.8</text>
+            <text x="540" y="188" text-anchor="middle" class="dg-label">점수 z (자동차·트럭·비행기)</text>
+
+            <g style="color:var(--accent-warm)">
+              <path d="M562,103 L608,103" class="dg-line-warm" marker-end="url(#arrow)"/>
+            </g>
+            <text x="585" y="94" text-anchor="middle" class="dg-value" style="fill:var(--accent-warm)">softmax</text>
+
+            <circle cx="630" cy="57" r="16" fill="var(--accent-warm)" fill-opacity=".8" stroke="var(--accent-warm)"/>
+            <circle cx="630" cy="103" r="16" fill="var(--accent-warm)" fill-opacity=".2" stroke="var(--accent-warm)"/>
+            <circle cx="630" cy="149" r="16" fill="var(--accent-warm)" fill-opacity=".35" stroke="var(--accent-warm)"/>
+            <text x="630" y="61" text-anchor="middle" class="dg-value" style="fill:#fff">74%</text>
+            <text x="630" y="107" text-anchor="middle" class="dg-value">6%</text>
+            <text x="630" y="153" text-anchor="middle" class="dg-value">20%</text>
+            <text x="672" y="103" text-anchor="middle" class="dg-label">합계<tspan x="672" dy="12">100%</tspan></text>
+          </svg>
+        </figure>
+        <ul class="bullets tight">
+          <li><b>FC(완전연결층)</b>이 벡터를 클래스 개수만큼의 점수(z)로 변환.</li>
+          <li><b>Softmax</b>가 지수함수로 점수를 합이 1인 확률로 정규화 — 값이 클수록 차이가 더 크게 벌어짐.</li>
+        </ul>
+        <div class="formula-strip" style="margin-top:.4%">CONV+POOL = 특징 추출 &nbsp;→&nbsp; FC+Softmax = 최종 분류 결정</div>
       </div>
     </section>
 
