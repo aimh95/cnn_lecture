@@ -394,6 +394,45 @@
   .kernel-cell.neg{color:var(--accent-warm);}
   .kernel-cell.pos{color:var(--accent);}
   .kernel-note{font-size:.78rem;color:var(--ink-soft);text-align:center;line-height:1.55;}
+
+  /* ---------- convolution step-by-step walkthrough ---------- */
+  .conv-step-wrap{
+    background:var(--paper-raised);border:1px solid var(--line);border-radius:12px;
+    box-shadow:var(--shadow);padding:1.4rem 1.5rem;margin:1.3rem 0;
+  }
+  .conv-step-row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center;}
+  .conv-step-col{display:flex;flex-direction:column;align-items:center;gap:.5rem;}
+  .cs-label{font-size:.72rem;color:var(--ink-faint);text-align:center;max-width:140px;line-height:1.3;}
+  .cs-arrow{font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:var(--accent-warm);font-weight:700;}
+  .cs-grid{display:grid;gap:2px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  .cs-input{grid-template-columns:repeat(6,1fr);width:192px;}
+  .cs-kernel,.cs-product{grid-template-columns:repeat(3,1fr);width:99px;}
+  .cs-output{grid-template-columns:repeat(4,1fr);width:132px;}
+  .cs-cell{
+    background:var(--paper-sunken);aspect-ratio:1;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.76rem;
+    color:var(--ink-soft);position:relative;
+  }
+  .cs-input .cs-cell.active{box-shadow:inset 0 0 0 3px var(--accent-warm);z-index:1;}
+  .cs-cell.pos{color:var(--accent);}
+  .cs-cell.neg{color:var(--accent-warm);}
+  .cs-cell.empty{color:var(--ink-faint);opacity:.4;}
+  .cs-cell.current-output{box-shadow:inset 0 0 0 3px var(--accent-warm);background:var(--accent-warm-soft);}
+  .cs-sum{
+    font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--accent);
+    background:var(--paper-sunken);border:1px solid var(--line);border-radius:8px;
+    padding:.5rem 1rem;min-width:56px;text-align:center;
+  }
+  .cs-controls{display:flex;gap:.5rem;align-items:center;justify-content:center;margin-top:1.2rem;flex-wrap:wrap;}
+  .cs-step-indicator{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--ink-soft);margin-left:.4rem;}
+  .cs-btn{
+    font-family:'Noto Sans KR',sans-serif;font-size:.85rem;background:var(--paper-sunken);
+    border:1px solid var(--line);border-radius:999px;padding:.42rem 1.05rem;cursor:pointer;color:var(--ink);
+  }
+  .cs-btn:hover{border-color:var(--accent);}
+  .cs-btn:disabled{opacity:.4;cursor:default;}
+  .cs-btn-primary{background:var(--accent);color:var(--paper-raised);border-color:var(--accent);font-weight:600;}
   .hp-desc code{
     font-family:'JetBrains Mono',monospace;
     background:var(--code-bg);
@@ -805,6 +844,46 @@
             <div class="kernel-note">전부 양수·중심이 최대 → 주변과 평균내는 <b>저역통과(low-pass)</b> 필터, 잡음 완화</div>
           </div>
         </div>
+
+        <h3>Sobel이 실제로 계산되는 과정, 한 칸씩</h3>
+        <p>합성곱은 결국 "작은 영역을 골라 커널과 곱해서 더하고, 한 칸 옮겨서 반복"하는 연산일 뿐입니다. 아래 6×6 예제 이미지(왼쪽은 밝기 9, 오른쪽은 밝기 0 — 가운데에 수직 경계가 있습니다)에 Sobel Gₓ를 스트라이드 1로 적용하는 과정을 한 단계씩 눌러서 확인해 보세요.</p>
+
+        <div class="conv-step-wrap">
+          <div class="conv-step-row">
+            <div class="conv-step-col">
+              <div class="cs-label">입력 6×6<br>(밝음=9, 어둠=0)</div>
+              <div class="cs-grid cs-input" id="csInput"></div>
+            </div>
+            <div class="cs-arrow">×</div>
+            <div class="conv-step-col">
+              <div class="cs-label">Sobel Gₓ 커널<br>(현재 위치에 고정)</div>
+              <div class="cs-grid cs-kernel" id="csKernel"></div>
+            </div>
+            <div class="cs-arrow">=</div>
+            <div class="conv-step-col">
+              <div class="cs-label">칸별 곱<br>(patch × kernel)</div>
+              <div class="cs-grid cs-product" id="csProduct"></div>
+            </div>
+            <div class="cs-arrow">Σ</div>
+            <div class="conv-step-col">
+              <div class="cs-label">9개 값을 모두 더한 합계</div>
+              <div class="cs-sum" id="csSum">0</div>
+            </div>
+            <div class="cs-arrow">→</div>
+            <div class="conv-step-col">
+              <div class="cs-label">출력 4×4<br>(한 칸씩 채워짐)</div>
+              <div class="cs-grid cs-output" id="csOutput"></div>
+            </div>
+          </div>
+          <div class="cs-controls">
+            <button class="cs-btn" id="csReset">처음부터</button>
+            <button class="cs-btn" id="csPrev">◀ 이전</button>
+            <button class="cs-btn cs-btn-primary" id="csPlay">▶ 자동 재생</button>
+            <button class="cs-btn" id="csNext">다음 ▶</button>
+            <span class="cs-step-indicator" id="csStepLabel">1 / 16</span>
+          </div>
+        </div>
+        <p class="sec-sub">왼쪽 3×3 파란 테두리가 지금 커널이 올려진 위치입니다. 경계(9→0으로 바뀌는 3·4열 사이)를 지날 때만 큰 음수 반응(-36)이 나오고, 색이 균일한 영역에서는 0이 나옵니다 — 이것이 Sobel이 "경계를 찾는다"는 말의 실제 의미입니다.</p>
 
         <div class="note-box">
           <span class="note-label">CNN이 실제로 학습해낸 것</span>
@@ -2130,5 +2209,144 @@
   var initCv=document.createElement('canvas'); initCv.width=WORK; initCv.height=WORK;
   drawShapesSample(initCv.getContext('2d'), WORK);
   processImageFromCanvas(initCv);
+})();
+</script>
+
+<script>
+(function(){
+  var INPUT = [
+    [9,9,9,0,0,0],
+    [9,9,9,0,0,0],
+    [9,9,9,0,0,0],
+    [9,9,9,0,0,0],
+    [9,9,9,0,0,0],
+    [9,9,9,0,0,0]
+  ];
+  var KERNEL = [[-1,0,1],[-2,0,2],[-1,0,1]];
+  var OUT_SIZE = 4;
+  var TOTAL_STEPS = OUT_SIZE*OUT_SIZE;
+  var step = 0;
+  var playing = false;
+  var timer = null;
+
+  var els = {
+    input: document.getElementById('csInput'),
+    kernel: document.getElementById('csKernel'),
+    product: document.getElementById('csProduct'),
+    sum: document.getElementById('csSum'),
+    output: document.getElementById('csOutput'),
+    prev: document.getElementById('csPrev'),
+    next: document.getElementById('csNext'),
+    play: document.getElementById('csPlay'),
+    reset: document.getElementById('csReset'),
+    stepLabel: document.getElementById('csStepLabel')
+  };
+  if(!els.input) return;
+
+  function buildGrid(container, n){
+    container.innerHTML='';
+    var cells=[];
+    for(var i=0;i<n;i++){
+      var cell=document.createElement('div');
+      cell.className='cs-cell';
+      container.appendChild(cell);
+      cells.push(cell);
+    }
+    return cells;
+  }
+
+  var inputCells = buildGrid(els.input, 36);
+  var kernelCells = buildGrid(els.kernel, 9);
+  var productCells = buildGrid(els.product, 9);
+  var outputCells = buildGrid(els.output, TOTAL_STEPS);
+
+  for(var ki=0;ki<3;ki++){
+    for(var kj=0;kj<3;kj++){
+      var kv = KERNEL[ki][kj];
+      var kcell = kernelCells[ki*3+kj];
+      kcell.textContent = kv;
+      if(kv<0) kcell.classList.add('neg'); else if(kv>0) kcell.classList.add('pos');
+    }
+  }
+
+  function grayBg(v){
+    var b = Math.round(30 + (v/9)*200);
+    return 'rgb('+b+','+b+','+b+')';
+  }
+
+  function computeOutput(r,c){
+    var s=0;
+    for(var i=0;i<3;i++){ for(var j=0;j<3;j++){ s += INPUT[r+i][c+j]*KERNEL[i][j]; } }
+    return s;
+  }
+
+  function render(){
+    var r = Math.floor(step/OUT_SIZE), c = step%OUT_SIZE;
+    for(var i=0;i<6;i++){
+      for(var j=0;j<6;j++){
+        var cell = inputCells[i*6+j];
+        var v = INPUT[i][j];
+        cell.textContent = v;
+        cell.style.background = grayBg(v);
+        cell.style.color = v>4 ? '#1a2430' : '#f2f2f0';
+        var within = (i>=r && i<r+3 && j>=c && j<c+3);
+        cell.classList.toggle('active', within);
+      }
+    }
+    var total = 0;
+    for(var i2=0;i2<3;i2++){
+      for(var j2=0;j2<3;j2++){
+        var pv = INPUT[r+i2][c+j2]*KERNEL[i2][j2];
+        total += pv;
+        var pc = productCells[i2*3+j2];
+        pc.textContent = pv;
+        pc.classList.remove('pos','neg');
+        if(pv>0) pc.classList.add('pos'); else if(pv<0) pc.classList.add('neg');
+      }
+    }
+    els.sum.textContent = total;
+    for(var k=0;k<TOTAL_STEPS;k++){
+      var oc = outputCells[k];
+      oc.classList.remove('current-output','pos','neg','empty');
+      if(k<step){
+        var rr=Math.floor(k/OUT_SIZE), cc=k%OUT_SIZE;
+        var val = computeOutput(rr,cc);
+        oc.textContent = val;
+        if(val>0) oc.classList.add('pos'); else if(val<0) oc.classList.add('neg');
+      } else if(k===step){
+        oc.textContent = total;
+        oc.classList.add('current-output');
+        if(total>0) oc.classList.add('pos'); else if(total<0) oc.classList.add('neg');
+      } else {
+        oc.textContent = '?';
+        oc.classList.add('empty');
+      }
+    }
+    els.stepLabel.textContent = (step+1)+' / '+TOTAL_STEPS+'  (행 '+(r+1)+', 열 '+(c+1)+')';
+    els.prev.disabled = (step===0);
+    els.next.disabled = (step===TOTAL_STEPS-1);
+  }
+
+  function stopPlay(){
+    playing=false;
+    if(timer){ clearInterval(timer); timer=null; }
+    els.play.textContent='▶ 자동 재생';
+  }
+  function startPlay(){
+    if(step>=TOTAL_STEPS-1) step=0;
+    playing=true;
+    els.play.textContent='⏸ 정지';
+    timer=setInterval(function(){
+      if(step>=TOTAL_STEPS-1){ stopPlay(); return; }
+      step++; render();
+    }, 700);
+  }
+
+  els.prev.addEventListener('click', function(){ if(step>0){ step--; render(); stopPlay(); } });
+  els.next.addEventListener('click', function(){ if(step<TOTAL_STEPS-1){ step++; render(); stopPlay(); } });
+  els.reset.addEventListener('click', function(){ step=0; render(); stopPlay(); });
+  els.play.addEventListener('click', function(){ if(playing) stopPlay(); else startPlay(); });
+
+  render();
 })();
 </script>
