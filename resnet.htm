@@ -1,0 +1,1849 @@
+
+
+
+
+
+<!doctype html>
+<html lang="ko">
+<head prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+
+
+
+
+
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+
+<meta name="robots" content="index,follow"/>
+
+
+
+<link rel="icon" type="image/png" href="https://ssl.pstatic.net/static/blog/icon/blog_Icon_192x192.png">
+
+<link rel="apple-touch-icon-precomposed" href="https://ssl.pstatic.net/static/blog/icon/blog_Icon_96x96.png" />
+
+<link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/t.static.blog/nmobile/versioning/lego_w-242745217_https.css" charset="UTF-8" />
+<link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/t.static.blog/nmobile/versioning/lego_view-63655323_https.css" charset="UTF-8" />
+<style>
+	div.spi_unity {
+		width:291px;
+	}
+</style>
+
+
+
+
+
+ 
+
+	
+		<meta property="og:title" content="CNN 모델 탐구 (6-2) Identity Mapping in ResNet"/>
+
+		
+			
+			
+			<meta property="og:image" content="https://blogthumb.pstatic.net/MjAxODEwMjlfMTM1/MDAxNTQwODA4MjYwNzIx.slUvOOhKPsQwCiyywFkCqj0vtfk_vw3PhbB35PGI8bAg.Qtkli0ylqpPitPtL8xp3pDg0O2EKC5fyH32Cgp9NONIg.PNG.siniphia/image.png?type=w2"/>
+			
+		
+        <meta property="og:description" content="1. 소개&amp;nbsp;ResNet을 개발한 마이크로소프트 연구팀은 파생 연구로 ResNet에 적용된 Identity Mapp..."/>
+
+		
+			<meta property="og:url" content="https://blog.naver.com/siniphia/221387516366"/>
+		
+	
+	
+
+<meta property="me:feed:serviceId" content="blog" />
+
+
+<link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/t.static.blog/nmobile/versioning//lib/prismplayer/prismplayer-mobile-se-1.10.1-24d7e47_https.css">
+
+
+	
+
+
+
+    
+
+
+
+<meta name="referrer" content="always">
+<meta property="og:type" content="article" />
+<meta property="og:article:author"
+      content="How Deep.. | 블로그"/>
+<meta class="_og_tag _author" property="og:site_name"
+	content="네이버 블로그 | How Deep is the Learning" />
+<meta property="naverblog:nickname" content="Paris Lee" />
+<meta property="naverblog:profile_image" content="https://blogpfthumb-phinf.pstatic.net/MjAyMjA1MTNfMjQ4/MDAxNjUyNDQxMTA3NDg1.eJ2NsDSgkwRkbkYSQh5IgKKswW3EKQKO4LtgoQXjVegg.6ZMXCDS7bBpHAWvNvOMbNPnPalSPms0hTMR-WCYa7NEg.PNG.siniphia/profileImage.png?type=s1" />
+
+<meta property="me:feed:serviceId" content="blog" />
+<meta name="format-detection" content="telephone=no" />
+
+
+<meta name="napp-site-analysis" content="gdid=90000003_00000000000000338BB969CE,service=blog,collection=blog" />
+
+
+
+	<link rel="stylesheet" type="text/css" href="https://ssl.pstatic.net/static/blog/se/css/se_viewer_blog_mobile_v1.43.1.css">
+
+
+    <link rel="stylesheet" href="/css/lego/photoviewer/image-viewer.css" /> 
+    
+    <title>CNN 모델 탐구 (6-2) Identity Mapping in ResNet : 네이버 블로그</title>
+    <script type="text/javascript">
+        var gbTrackingCode = 'external';
+        var gbTrackingCodeReferer = 'https://www.google.com/';
+        
+        var gsSearchKeyword = decodeURIComponent('');
+        var rssUrlPageSpeedOff = 'true' === 'true';
+        var blogOwner = false;
+        var rightClickOpenYn = false;
+        var rightClickCalloutToggle = true;
+    </script>
+    
+        
+            <script type="text/javascript" charset="utf-8" src="https://feblog.pstatic.net/module/real/postView/postView_3.2.0/js/critical.js"></script>
+        
+        
+    
+</head>
+<body id="body" class="tablet_end" >
+
+    
+    
+        
+    
+
+<div class="_ngApp">
+  <bg-drawer-menu bg-drawer-pc-url="https://blog.naver.com/siniphia/221387516366?viewType=pc" bg-drawer-menu-btn="._openDrawer" bg-drawer-app-link-type="postViewDirect" bg-drawer-app-params-json="{&quot;logNo&quot;:221387516366,&quot;blogId&quot;:&quot;siniphia&quot;}"></bg-drawer-menu>
+</div>
+
+<div class="u_skip"><a href="#ct">본문 바로가기</a></div>
+
+<div class="Ngnb gnb_bg_white" style="will-change: contents;">
+	<div class="Ngnb_service logo_blog_green">
+		<h1 class="Nservice_item">
+			
+				
+					<a href="/FeedList.naver"><span class="Nicon_service">블로그</span></a>
+				
+				
+			
+		</h1>
+		<h2 class="gnb_title">
+            <div class="center">
+ 				<span class="td">
+ 					<a href="#" id="_categoryName" class="_cur_category _returnFalse" onclick="sendClickNlog('pgn.blogname', '');">
+ 						<span class="sp ico">카테고리 이동</span>
+ 					</a>
+ 				</span>
+                <span class="td">
+ 					<a href="/PostList.naver?blogId=siniphia" onclick="sendClickNlog('pgn.eachhome', '');">
+ 						<span class="ell">How Deep is the Learning</span>
+ 					</a>
+ 				</span>
+            </div>
+		</h2>
+	</div>
+	<div class="Ngnb_tool">
+		
+		<a href="/PostSearchList.naver?blogId=siniphia" class="Ntool_button"><span class="Nicon_search">검색</span></a>
+		<button type="button" class="Ntool_button _openDrawer _returnFalse" onclick="sendClickNlog('pgn.qmenu', '');"><span class="Nicon_drawer">MY메뉴 열기</span></button>
+	</div>
+</div>
+
+<div id="post_share" style="position:absolute;top:50px;display:none;z-index:2000;right:15px">
+	<div id="spiLayer"></div>
+</div>
+
+<div id="_post_area" class="ct_wrap">
+	<div id="ct" class="end" role="main" style="overflow:hidden;">
+        
+		    
+
+
+
+
+
+
+<div id="_post_property" style="display:none"
+commentCount="2"
+blockType="0"		
+isBlacklistUser="false"	
+blogName="How Deep is the Learning"
+commentEnable="true"
+categoryNo="22"
+logType="0"
+addDate="1540813372492"
+hasNaverMap="false"
+gdid="90000003_00000000000000338BB969CE"
+browserTitle="CNN 모델 탐구 (6-2) Identity Mapping in ResNet : 네이버 블로그"
+isRecommendableBlog="true"
+attachFilePunishInfo='{}'
+attachVideoInfo = '[ ]'
+editorversion='3'
+supportSE3='true'
+relationTypeWithBlog='3'
+uri="http://blog.naver.com/siniphia/221387516366"
+directoryName=""
+blogUserStatAllow = "true"
+></div>
+<div id="_photo_view_property" style="display: none"
+	 attachImagePathAndIdInfo = '[{&#034;path&#034;:&#034;/MjAxODEwMjlfMTM1/MDAxNTQwODA4MjYwNzIx.slUvOOhKPsQwCiyywFkCqj0vtfk_vw3PhbB35PGI8bAg.Qtkli0ylqpPitPtL8xp3pDg0O2EKC5fyH32Cgp9NONIg.PNG.siniphia/image.png&#034;,&#034;id&#034;:1},{&#034;path&#034;:&#034;/MjAxODEwMjlfMTEy/MDAxNTQwODExNjA2ODk2.R4Cw6fvwShYAjWbfqGR6NL3rxEbg1eFv0f4sYiTCZZgg.k2hD6qu5H8gBA74pRvLnzmgsszKGcD50YLh0cb64MnUg.PNG.siniphia/image.png&#034;,&#034;id&#034;:2},{&#034;path&#034;:&#034;/MjAxODEwMjlfMTA4/MDAxNTQwODEyMDQ2NDQw.lcamhf6Lo0naEJgv7H1FEcSykaqJQ6OyyI9ZWKVQmOUg.MxSu2kZayNbYNK2xfrZScCy2UifUlb4cG2mKWgOKrbMg.PNG.siniphia/image.png&#034;,&#034;id&#034;:3},{&#034;path&#034;:&#034;/MjAxODEwMjlfMjY5/MDAxNTQwODEyMTA0NzQ3.zvbw_X0nOAZskdRD2W2xDEyFg7k888CIo8PvWHNKOMsg.pfcY2I2CvUAWG-xlNKRa9zyGWBA-Lc5O5VGil4ZP7bEg.PNG.siniphia/image.png&#034;,&#034;id&#034;:4},{&#034;path&#034;:&#034;/MjAxODEwMjlfNzQg/MDAxNTQwODEzMTc2MTIy.ZdXV2zmjcmDL-DelNPJ0adcfmk03X6_oR0uPsdjoD6Mg.5Efy4OHnbr-EKw4QjmocbwhQp3le5cbYaYnajUjNlCYg.PNG.siniphia/image.png&#034;,&#034;id&#034;:5},{&#034;path&#034;:&#034;/MjAxODEwMzBfNjkg/MDAxNTQwODk1NTAwMTk1.gNumZPSbn2WKMMLNEmNU4LkfhoMji7miKs1kA_6Uibog.C2vUrWL_oatFQc1M1WoyiDVHcix_fwVHfIU3LAHNZiwg.PNG.siniphia/image.png&#034;,&#034;id&#034;:6},{&#034;path&#034;:&#034;/MjAxODEwMzBfMjg5/MDAxNTQwODk2MTQzNzc0.RKpwNu7ydJqkeh3KjwNm8G80M2uSpGwja6loK2rRnnkg.3BhvuhM0oHlPwkwoq8hZGPnuq-kfpjE9DOODOm4XjD8g.PNG.siniphia/image.png&#034;,&#034;id&#034;:7}]'
+	 blogId = 'siniphia'
+	 logNo = '221387516366'
+	 title = 'CNN 모델 탐구 (6-2) Identity Mapping in ResNet'
+	 editorversion='3'
+></div>
+
+   
+	
+		 
+		 
+		
+			
+			
+			
+		
+	
+
+
+<div class="_postView">
+	<!-- 폰트 사이즈 셋팅 -->
+	
+	
+		
+		
+		
+		
+		
+		
+	
+
+	
+	
+	
+
+	
+
+	
+	
+	<div class="post_ct   se3_view " id="viewTypeSelector">
+		
+		
+
+		
+
+		
+		<div id="SEDOC-1540898874318--1822842388" class="se_doc_viewer se_body_wrap se_theme_transparent se_m" data-docversion="1.0">
+<div class="se_doc_header_start" id="SEDOC-1540898874318--1822842388_se_doc_header_start"></div>
+<!-- SE_DOC_HEADER_START -->
+<div id="SEDOC-1540898874318--1822842388_viewer_head" class="se_viewer_head"></div>
+<div class="se_component_wrap">
+<div class="se_component se_documentTitle documentTitle_blog  is-fill">
+    <div class="se_sectionArea is-fill se_align-left">
+        <!-- --> 
+<div class="blog_category"><a href="/PostList.naver?blogId=siniphia&categoryNo=22&logCode=0&categoryName=%EB%85%BC%EB%AC%B8%EB%A6%AC%EB%B7%B0#postlist_block" onclick="sendClickNlog('pst.board', '');">논문리뷰</a></div>
+<!--
+ -->
+        <!-- SE_DOC_HEADER_TITLE_TOP-->
+     	<div id="SEDOC-1540898874318--1822842388_se_doc_title_top" class="se_doc_title_top"></div>
+        <div class="se_editArea">
+        	<div class="se_viewArea se_ff_nanumgothic se_fs_D2">
+	            <div class="se_editView se_title">
+	                <div class="se_textView">
+                        <h3 class="se_textarea">
+                            <!-- -->CNN 모델 탐구 (6-2) Identity Mapping in ResNet<!-- -->
+                            
+                        </h3>
+                        
+                        
+	                </div>
+	            </div>
+	        </div>
+        </div><!-- SE_DOC_HEADER_TITLE_MIDDLE-->
+        <div id="SEDOC-1540898874318--1822842388_se_doc_title_middle" class="se_doc_title_middle"></div>
+        <!-- SE_DOC_HEADER_CONTENTS_START -->
+        <!-- -->
+<div class="blog_authorArea">
+
+	<a href="/PostList.naver?blogId=siniphia" class="blog_thumbnail" onclick="sendClickNlog('pst.writer', '');">
+
+		<span class="img"><img src="https://blogpfthumb-phinf.pstatic.net/MjAyMjA1MTNfMjQ4/MDAxNjUyNDQxMTA3NDg1.eJ2NsDSgkwRkbkYSQh5IgKKswW3EKQKO4LtgoQXjVegg.6ZMXCDS7bBpHAWvNvOMbNPnPalSPms0hTMR-WCYa7NEg.PNG.siniphia/profileImage.png?type=s1" width="36" height="36" alt="프로필"></span>
+	</a>
+
+	<div class="text_area">
+	    <div class="blog_author">
+            <a href="/PostList.naver?blogId=siniphia" onclick="sendClickNlog('pst.writer', '');"><strong class="ell">Paris Lee</strong></a>
+        </div>
+        <p class="blog_date">
+            <span class="txt">2018. 10. 29. 20:42</span>
+        </p>
+	</div>
+</div>
+
+<div class="blog_btnArea">
+		<a href="#" class="btn_buddyadd _buddyadd_default _add_buddy _param(siniphia|true||/BuddyAddForm.naver) _returnFalse" isBlackUser="false" onclick="sendClickNlog('pst.add', ''); nmobileBaEventSender.buddyButtonClick('https://scv-blog.io.naver.com/jackpotlog/v1/logs', '16333b3c327b8a4182032e2d815f6553082f0ec48cffa03f73d7b9dc2e6fa190', 109044788, 221387516366, 'X');"><span class="sp"></span> 이웃추가</a>
+
+<!-- 본문 기타 기능 -->
+<div class="post_function_t1">
+<button type="button" class="btn_function _btn_tools" onclick="sendClickNlog('pst.func', '');"><span class="sim">본문 기타 기능</span></button>
+	<div class="lyr_post_function" id="_tools_layer" style="display:none">
+		<ul>
+			<li class="font_size">
+				<strong class="blind">본문 폰트 크기 조정</strong>
+				<button type="button" class="btn_font_s _smallFont  " id="moreSmall" onclick="sendClickNlog('pst.ftxts', '');"><span class="sim">본문 폰트 크기 작게 보기</span></button>
+				<button type="button" class="btn_font_b _bigFont  " id="moreBig" onclick="sendClickNlog('pst.ftxtl', '');"><span class="sim">본문 폰트 크기 크게 보기</span></button>
+				<span class="size  " id="font_size">가</span>
+			</li>
+				<li><a href="#" class="naver-splugin _returnFalse" onclick="sendClickNlog('pst.fshare', 'Mblog.post'); window.nsc='Mblog.post';"
+					data-style="standard"
+					data-url="https://m.blog.naver.com/siniphia/221387516366"
+					data-title="CNN 모델 탐구 (6-2) Identity Mapping in ResNet"
+                    data-likeServiceId="BLOG"
+                    data-likeContentsId="siniphia_221387516366"
+                    data-spic-cid="221387516366"
+					data-logDomain="https://proxy.blog.naver.com/spi/v1/api/shareLog"
+                    data-canonical-url="https://m.blog.naver.com/siniphia/221387516366"
+					data-oninitialize="splugin_oninitialize();"
+					data-friend-display="on"
+					data-kakaostory-display="off"
+					data-prevent-short-url="on">공유하기 <span class="share sim naver-splugin-c"></span>
+					</a>
+				</li>
+				<li><a href="#" class="_copy_url _returnFalse" onclick="sendClickNlog('pst.furl', '');">URL복사 <span class="copy sim"></span></a></li>
+				<li><a href="#" class="_report _param(https://srp2.naver.com/report?svc=BLG&exit=close&ctype=AA01&cwriterenc=30LD546nHPukIQ5OEmMVUjzRHLpOaq0Nu0EsdMN1tWg%3D&ctitle=CNN%20%EB%AA%A8%EB%8D%B8%20%ED%83%90%EA%B5%AC%20(6-2)%20Identity%20Mapping%20in%20ResNet&cwriter=sini****&dark=disable&memtype=Y&env=mobile&cnickname=sini****&vsvc=BLG&cid=siniphia%40%40109044788%40%40mylog%40%40221387516366&returl=) _returnFalse" onclick="sendClickNlog('pst.report', '');">신고하기 <span class="report sim"></span></a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- //본문 기타 기능 -->
+
+<!--
+ -->
+        <!-- SE_DOC_HEADER_CONTENTS_END -->
+        <!-- SE_DOC_HEADER_TITLE_BOTTOM-->
+        <div id="SEDOC-1540898874318--1822842388_se_doc_title_bottom" class="se_doc_title_bottom"></div>
+    </div>
+</div>
+
+</div>
+<!-- B2C 상품 -->
+
+<!-- _BLOG_CONTENTS_HEADER_TAIL -->
+<!-- SE_DOC_HEADER_END -->
+<div class="se_doc_header_end" id="SEDOC-1540898874318--1822842388_se_doc_header_end"></div>
+<div class="se_doc_contents_start" id="SEDOC-1540898874318--1822842388_se_doc_contents_start"></div>
+<!-- SE_DOC_CONTENTS_START -->
+<div class="se_component_wrap sect_dsc __se_component_area">
+    
+
+
+
+
+
+
+
+
+
+
+
+<div class="se_component se_sectionTitle ">
+    <div class="se_sectionArea se_align-left">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_H3 se_fw_bold"
+            			style="color: ;
+                        text-decoration: inherit;
+                        font-style: inherit;
+                        ">
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <h6 class="se_textarea"><!-- SE3-TEXT { -->1. 소개<!-- } SE3-TEXT --></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { --><span>&nbsp;ResNet을 개발한 마이크로소프트 연구팀은 파생 연구로 ResNet에 적용된 Identity Mapping의 성공을 수식을 통해 분석하고, 최적의 Residual Network 구조는 무엇인지에 대한 실험을 진행했다. 그 내용은 'Identity Mappings in Deep Residual Networks (2016)'에 자세히 나와있으며, 이 추가 논문을 바탕으로 ResNet의 Identity Mapping이라는 개념을 더 깊게 이해하고 이를 바탕으로 개선된 구조를 알아볼 수 있을 것이다.&nbsp;<br></span><span><br></span><span></span><!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+<div class="se_component se_sectionTitle ">
+    <div class="se_sectionArea se_align-left">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_H3 se_fw_bold"
+            			style="color: ;
+                        text-decoration: inherit;
+                        font-style: inherit;
+                        ">
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <h6 class="se_textarea"><!-- SE3-TEXT { -->2. ResNet<!-- } SE3-TEXT --></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+		<div class="se_component se_image default">
+			<div class="se_sectionArea se_align-center">
+				<div class="se_editArea">
+					<div class="se_viewArea" style="max-width:277px">
+        <a href="#" onclick="return false;" class="se_mediaArea __se_image_link __se_link" data-linktype="img" data-linkdata='{"imgId" : "SEDOC-1540898874318--1822842388_image_0_img", "src" : "https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTM1/MDAxNTQwODA4MjYwNzIx.slUvOOhKPsQwCiyywFkCqj0vtfk_vw3PhbB35PGI8bAg.Qtkli0ylqpPitPtL8xp3pDg0O2EKC5fyH32Cgp9NONIg.PNG.siniphia/image.png", "linkUse" : "false", "link" : ""}'>
+                            <img id="SEDOC-1540898874318--1822842388_image_0_img" class="se_mediaImage __se_img_el" src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTM1/MDAxNTQwODA4MjYwNzIx.slUvOOhKPsQwCiyywFkCqj0vtfk_vw3PhbB35PGI8bAg.Qtkli0ylqpPitPtL8xp3pDg0O2EKC5fyH32Cgp9NONIg.PNG.siniphia/image.png?type=w80_blur" data-lazy-src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTM1/MDAxNTQwODA4MjYwNzIx.slUvOOhKPsQwCiyywFkCqj0vtfk_vw3PhbB35PGI8bAg.Qtkli0ylqpPitPtL8xp3pDg0O2EKC5fyH32Cgp9NONIg.PNG.siniphia/image.png?type=w800" data-width="277" data-height="484" width="277" height="484" data-attachment-id="Iyeillr8duDM2i6QvJrt53rFw7dQ" alt="">
+        
+        </a>
+							<div class="se_editView">
+								<div class="se_textView se_mediaCaption">
+                                        <span class="se_textarea">Plane Network(왼쪽), ResNet(오른쪽)</span>
+								</div>
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { --><span>&nbsp;이전 글에서 설명한 ResNet의 Identity Mapping은 네트워크의 Shortcut으로 구현되며 이를 바탕으로 Feed Forwarding과 Backpropagation시에 직접적인 전파(Propagation)를 가능하게 한다. 이런 'Clean'한 정보의 통로는 최적화에 도움이 된다. </span><span>좀 더 자세히 말하자면, 일반적인 CNN의 경우에는 최종 결과값이 수많은 </span><span><b>행렬들의 </b></span><span><b>곱셈</b></span><span>으로 표현되는데, ResNet은 이 Clean한 루트인 Shortcut 덕분에 결과값을 간단히 </span><span><b>Residual Unit들의 덧셈</b></span><span>으로 표현할 수 있게 되며, Backpropagation시에도 Vanishing 문제가 일어나지 않는다. (위 그림의 구조를 생각해보면 직관적인 이해가 가능할 것이고, 더 자세한 설명은 아래에서 확인 가능하다.)</span><span><br></span><span></span><!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+<div class="se_component se_horizontalLine default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="viewArea">
+                <div class="se_horizontalLineView">
+                    <div class="se_hr"><hr></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { --><span style="color: rgb(0, 0, 0);">&nbsp;<br></span><span style="color: rgb(0, 0, 0);"><b>(1) Residual Unit들의 덧셈?</b></span><span style="color: rgb(0, 0, 0);"><br></span><span style="color: rgb(0, 0, 0);">&nbsp;기존의 네트워크는 뽑아낸 특징들을 표현할 때, 연결된 전체 레이어들 간의 행렬곱으로 표현된다. 그런데 어떻게 ResNet에서는 전체 네트워크가 Residual Unit들의 덧셈으로 표현되는지 수식과 함께 이해해보자.&nbsp;</span><!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+		<div class="se_component se_image default">
+			<div class="se_sectionArea se_align-left">
+				<div class="se_editArea">
+					<div class="se_viewArea" style="max-width:432px">
+        <a href="#" onclick="return false;" class="se_mediaArea __se_image_link __se_link" data-linktype="img" data-linkdata='{"imgId" : "SEDOC-1540898874318--1822842388_image_1_img", "src" : "https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTEy/MDAxNTQwODExNjA2ODk2.R4Cw6fvwShYAjWbfqGR6NL3rxEbg1eFv0f4sYiTCZZgg.k2hD6qu5H8gBA74pRvLnzmgsszKGcD50YLh0cb64MnUg.PNG.siniphia/image.png", "linkUse" : "false", "link" : ""}'>
+                            <img id="SEDOC-1540898874318--1822842388_image_1_img" class="se_mediaImage __se_img_el" src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTEy/MDAxNTQwODExNjA2ODk2.R4Cw6fvwShYAjWbfqGR6NL3rxEbg1eFv0f4sYiTCZZgg.k2hD6qu5H8gBA74pRvLnzmgsszKGcD50YLh0cb64MnUg.PNG.siniphia/image.png?type=w80_blur" data-lazy-src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTEy/MDAxNTQwODExNjA2ODk2.R4Cw6fvwShYAjWbfqGR6NL3rxEbg1eFv0f4sYiTCZZgg.k2hD6qu5H8gBA74pRvLnzmgsszKGcD50YLh0cb64MnUg.PNG.siniphia/image.png?type=w800" data-width="432" data-height="55" width="432" height="55" data-attachment-id="ITT5YNN6DkciV8kqPLUcwdTlOeaY" alt="">
+        
+        </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { -->&nbsp;이 식은 그저 Residual Unit을 수식으로 나타낸 식일 뿐이다. x와 y는 각각 Unit의 입력과 출력, 아랫첨자 l은 레이어의 번호, W는 가중치 행렬, F는 Residual Function, f는 Activation Function(=ReLU), 그리고 h는 Identity Mapping을 위한 Dimension 세팅용 함수이다. 만약 f, 즉 ReLU를 Identity Mapping이라고 생각하면 (2)번 식은 x<sub>l+1</sub> = y<sub>l</sub>로 둘 수 있고, 이 식을 (1)의 좌변에 대입하면<!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+		<div class="se_component se_image default">
+			<div class="se_sectionArea se_align-left">
+				<div class="se_editArea">
+					<div class="se_viewArea" style="max-width:429px">
+        <a href="#" onclick="return false;" class="se_mediaArea __se_image_link __se_link" data-linktype="img" data-linkdata='{"imgId" : "SEDOC-1540898874318--1822842388_image_2_img", "src" : "https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTA4/MDAxNTQwODEyMDQ2NDQw.lcamhf6Lo0naEJgv7H1FEcSykaqJQ6OyyI9ZWKVQmOUg.MxSu2kZayNbYNK2xfrZScCy2UifUlb4cG2mKWgOKrbMg.PNG.siniphia/image.png", "linkUse" : "false", "link" : ""}'>
+                            <img id="SEDOC-1540898874318--1822842388_image_2_img" class="se_mediaImage __se_img_el" src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTA4/MDAxNTQwODEyMDQ2NDQw.lcamhf6Lo0naEJgv7H1FEcSykaqJQ6OyyI9ZWKVQmOUg.MxSu2kZayNbYNK2xfrZScCy2UifUlb4cG2mKWgOKrbMg.PNG.siniphia/image.png?type=w80_blur" data-lazy-src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMTA4/MDAxNTQwODEyMDQ2NDQw.lcamhf6Lo0naEJgv7H1FEcSykaqJQ6OyyI9ZWKVQmOUg.MxSu2kZayNbYNK2xfrZScCy2UifUlb4cG2mKWgOKrbMg.PNG.siniphia/image.png?type=w800" data-width="429" data-height="28" width="429" height="28" data-attachment-id="IummvLqug6vp5A6DBZgCCHx8YzE8" alt="">
+        
+        </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { -->을 얻을 수 있고, 이를 Recursive하게 계속 대입해가면<!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+		<div class="se_component se_image default">
+			<div class="se_sectionArea se_align-left">
+				<div class="se_editArea">
+					<div class="se_viewArea" style="max-width:441px">
+        <a href="#" onclick="return false;" class="se_mediaArea __se_image_link __se_link" data-linktype="img" data-linkdata='{"imgId" : "SEDOC-1540898874318--1822842388_image_3_img", "src" : "https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMjY5/MDAxNTQwODEyMTA0NzQ3.zvbw_X0nOAZskdRD2W2xDEyFg7k888CIo8PvWHNKOMsg.pfcY2I2CvUAWG-xlNKRa9zyGWBA-Lc5O5VGil4ZP7bEg.PNG.siniphia/image.png", "linkUse" : "false", "link" : ""}'>
+                            <img id="SEDOC-1540898874318--1822842388_image_3_img" class="se_mediaImage __se_img_el" src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMjY5/MDAxNTQwODEyMTA0NzQ3.zvbw_X0nOAZskdRD2W2xDEyFg7k888CIo8PvWHNKOMsg.pfcY2I2CvUAWG-xlNKRa9zyGWBA-Lc5O5VGil4ZP7bEg.PNG.siniphia/image.png?type=w80_blur" data-lazy-src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfMjY5/MDAxNTQwODEyMTA0NzQ3.zvbw_X0nOAZskdRD2W2xDEyFg7k888CIo8PvWHNKOMsg.pfcY2I2CvUAWG-xlNKRa9zyGWBA-Lc5O5VGil4ZP7bEg.PNG.siniphia/image.png?type=w800" data-width="441" data-height="69" width="441" height="69" data-attachment-id="IYs3kGU2bRLkbUAy-0x3xrAPLimA" alt="">
+        
+        </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { --><span>로 표현할 수 있다. 여기서 L은 전체 레이어의 인덱스를, l은 부분 레이어의 인덱스를 나타낸다. 즉, Residual Unit을 사용한다면 </span><span><b>Feed Forwarding</b></span><span><b>시에 전체 네트워크</b></span><span>를 Residual Function인 F의 합들로 표현할 수 있다는 것이다.<br></span><span><br></span><span>또한 (4)의 양변에 미분을 적용하면 </span><span><b>Backpropagation시의 전체 네트워크</b></span><span>를 수식으로 살펴볼 수 있다.</span><!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+		<div class="se_component se_image default">
+			<div class="se_sectionArea se_align-left">
+				<div class="se_editArea">
+					<div class="se_viewArea" style="max-width:549px">
+        <a href="#" onclick="return false;" class="se_mediaArea __se_image_link __se_link" data-linktype="img" data-linkdata='{"imgId" : "SEDOC-1540898874318--1822842388_image_4_img", "src" : "https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfNzQg/MDAxNTQwODEzMTc2MTIy.ZdXV2zmjcmDL-DelNPJ0adcfmk03X6_oR0uPsdjoD6Mg.5Efy4OHnbr-EKw4QjmocbwhQp3le5cbYaYnajUjNlCYg.PNG.siniphia/image.png", "linkUse" : "false", "link" : ""}'>
+                            <img id="SEDOC-1540898874318--1822842388_image_4_img" class="se_mediaImage __se_img_el" src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfNzQg/MDAxNTQwODEzMTc2MTIy.ZdXV2zmjcmDL-DelNPJ0adcfmk03X6_oR0uPsdjoD6Mg.5Efy4OHnbr-EKw4QjmocbwhQp3le5cbYaYnajUjNlCYg.PNG.siniphia/image.png?type=w80_blur" data-lazy-src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMjlfNzQg/MDAxNTQwODEzMTc2MTIy.ZdXV2zmjcmDL-DelNPJ0adcfmk03X6_oR0uPsdjoD6Mg.5Efy4OHnbr-EKw4QjmocbwhQp3le5cbYaYnajUjNlCYg.PNG.siniphia/image.png?type=w800" data-width="549" data-height="68" width="549" height="68" data-attachment-id="IquCRTZnudgpL7yOeVqdX7d7OOc4" alt="">
+        
+        </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { --><span><span style="color: rgb(0, 0, 0);">ε를 Loss Function이라고 두었을 때 좌변의 식은 현재 레이어(x</span></span><span><span style="color: rgb(0, 0, 0);"><sub>l</sub></span></span><span><span style="color: rgb(0, 0, 0);"></span></span><span><span style="color: rgb(0, 0, 0);">)에 적용되는 가중치 갱신을 위한 미분값을 의미하며, 이 값이 0이 되어버린다면 가중치의 갱신 속도가 느려지는 Vanishing 문제가 발생한다.<br></span><span style="color: rgb(0, 0, 0);"><br></span><span style="color: rgb(0, 0, 0);"> 이제 우변을 살펴보자.</span><span style="color: rgb(0, 0, 0);"><br></span><span style="color: rgb(0, 0, 0);"></span></span><span><span style="color: rgb(0, 0, 0);"><b> </b></span></span><span><span style="color: rgb(0, 0, 0);">(1)</span></span><span><span style="color: rgb(0, 0, 0);"><b>&nbsp;</b><span style="color: rgb(0, 0, 0);"><b>d</b><span style=" color: rgb(0, 0, 0)"><b>ε/dx</b></span></span><span style="color: rgb(0, 0, 0);"><span style=" color: rgb(0, 0, 0)"><sub><b>L</b></sub></span></span></span></span><span><span style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);"><span style=" color: rgb(0, 0, 0)"><b> </b></span></span></span></span><span><span style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);"><span style=" color: rgb(0, 0, 0)">:</span></span></span></span><span><span style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);"><span style=" color: rgb(0, 0, 0)">&nbsp;</span></span></span></span><span>우변의 앞에 곱해져 있는 </span><span><span style="color: rgb(0, 0, 0);">이 식은</span></span><span>&nbsp;<span style="color: rgb(0, 0, 0);">ε에 대한 마지막 레이어의 미분이므로</span></span><span>&nbsp;중간에 어떤 가중치 행렬도 거치지 않기에&nbsp; Vanishing이 발생하지 않는다. <br></span><span>(2) </span><span><b>괄호 안의 식</b></span><span> : 이 경우 W</span><span><sub>i</sub></span><span>라는&nbsp;</span><span>가중치 행렬들을 지나기는 한다. 하지만 학습 과정에서 괄호안의 우변이 Mini-batch마다 항상 -1이 되어 전체 식이 0이 되어버리는 일은 거의 없기 때문에 역시 Vanishing이 발생할 확률은 극히 낮다.&nbsp;<br></span><span><br></span><span><br></span><span><b>(2) 그래서 이게 무슨 의미를 갖는지?</b></span><span><br></span><span>&nbsp;지금까지 수식을 사용해 Feed Forwarding 및 Backpropagation시 일어나는 과정을 살펴보았는데, 전자의 경우 Residual Unit의 Shortcut을 이용해 곱셈이 아닌 덧셈으로 쉬운 정보이동이 가능해지며, 후자의 경우 수많은 레이어의 가중치 행렬들의 곱셈으로 정보가 전달되는 것이 아니기 때문에 Vanishing 문제가 발생하지 않는다. 이는 정보의 쉬운 전달을 가능하게 해주며 따라서&nbsp;<span style="color: rgb(0, 0, 0);">네트워크의 깊이의 한계에 대한 사슬을 끊어버릴 수 있음을 의미한다.</span></span><span><br></span><span></span><span></span><!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+<div class="se_component se_horizontalLine default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="viewArea">
+                <div class="se_horizontalLineView">
+                    <div class="se_hr"><hr></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+<div class="se_component se_sectionTitle ">
+    <div class="se_sectionArea se_align-left">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_H3 se_fw_bold"
+            			style="color: ;
+                        text-decoration: inherit;
+                        font-style: inherit;
+                        ">
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <h6 class="se_textarea"><!-- SE3-TEXT { -->3. 구조<!-- } SE3-TEXT --></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { --><span>&nbsp;ResNet의 효과는 검증되었으니<span style="color: rgb(0, 0, 0);"><span>&nbsp;이제&nbsp;</span></span>Residual Unit의 구조를 변경해가며 더 나은 구조가 있을지에 대해 탐구해볼 것이다. 논문에서는 ResNet의 Identity Mapping이 적용되는 두 가지 요소, 즉 </span><span><b>Shortcut</b></span><span>과 </span><span><b>Activation Function</b></span><span>으로 나누어 실험을 진행했다.<br></span><span><br></span><span>(1) Shortcut</span><!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+		<div class="se_component se_image default">
+			<div class="se_sectionArea se_align-center">
+				<div class="se_editArea">
+					<div class="se_viewArea" style="max-width:483px">
+        <a href="#" onclick="return false;" class="se_mediaArea __se_image_link __se_link" data-linktype="img" data-linkdata='{"imgId" : "SEDOC-1540898874318--1822842388_image_5_img", "src" : "https://mblogthumb-phinf.pstatic.net/MjAxODEwMzBfNjkg/MDAxNTQwODk1NTAwMTk1.gNumZPSbn2WKMMLNEmNU4LkfhoMji7miKs1kA_6Uibog.C2vUrWL_oatFQc1M1WoyiDVHcix_fwVHfIU3LAHNZiwg.PNG.siniphia/image.png", "linkUse" : "false", "link" : ""}'>
+                            <img id="SEDOC-1540898874318--1822842388_image_5_img" class="se_mediaImage __se_img_el" src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMzBfNjkg/MDAxNTQwODk1NTAwMTk1.gNumZPSbn2WKMMLNEmNU4LkfhoMji7miKs1kA_6Uibog.C2vUrWL_oatFQc1M1WoyiDVHcix_fwVHfIU3LAHNZiwg.PNG.siniphia/image.png?type=w80_blur" data-lazy-src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMzBfNjkg/MDAxNTQwODk1NTAwMTk1.gNumZPSbn2WKMMLNEmNU4LkfhoMji7miKs1kA_6Uibog.C2vUrWL_oatFQc1M1WoyiDVHcix_fwVHfIU3LAHNZiwg.PNG.siniphia/image.png?type=w800" data-width="483" data-height="456" width="483" height="456" data-attachment-id="IiMuzXogMREsH7z7e2P-UufSd8as" alt="">
+        
+        </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { --><span>&nbsp;이들은 기존의 것과는 다른 5종류의 Shortcut을 디자인 했고 CIFAR-10 데이터를 사용해 실험을 진행했다. 하지만 </span><span><b>어떤 디자인도 원본의 정확도를 따라잡지 못했다</b></span><span>. 중간에 추가된 다양한 요소들은 곱셈 연산 요소들이 들어있기 때문에 정보 전달에 방해가 되었고 최적화 문제에 봉착하고 말았기 때문이다.<br></span><span><br></span><span><br></span><span>(2) Activation Function</span><!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+		<div class="se_component se_image default">
+			<div class="se_sectionArea se_align-left">
+				<div class="se_editArea">
+					<div class="se_viewArea" style="max-width:650px">
+        <a href="#" onclick="return false;" class="se_mediaArea __se_image_link __se_link" data-linktype="img" data-linkdata='{"imgId" : "SEDOC-1540898874318--1822842388_image_6_img", "src" : "https://mblogthumb-phinf.pstatic.net/MjAxODEwMzBfMjg5/MDAxNTQwODk2MTQzNzc0.RKpwNu7ydJqkeh3KjwNm8G80M2uSpGwja6loK2rRnnkg.3BhvuhM0oHlPwkwoq8hZGPnuq-kfpjE9DOODOm4XjD8g.PNG.siniphia/image.png", "linkUse" : "false", "link" : ""}'>
+                            <img id="SEDOC-1540898874318--1822842388_image_6_img" class="se_mediaImage __se_img_el" src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMzBfMjg5/MDAxNTQwODk2MTQzNzc0.RKpwNu7ydJqkeh3KjwNm8G80M2uSpGwja6loK2rRnnkg.3BhvuhM0oHlPwkwoq8hZGPnuq-kfpjE9DOODOm4XjD8g.PNG.siniphia/image.png?type=w80_blur" data-lazy-src="https://mblogthumb-phinf.pstatic.net/MjAxODEwMzBfMjg5/MDAxNTQwODk2MTQzNzc0.RKpwNu7ydJqkeh3KjwNm8G80M2uSpGwja6loK2rRnnkg.3BhvuhM0oHlPwkwoq8hZGPnuq-kfpjE9DOODOm4XjD8g.PNG.siniphia/image.png?type=w800" data-width="650" data-height="319" width="650" height="319" data-attachment-id="I3bZIKJdGmju3xtI6XkyKIH-LOg8" alt="">
+        
+        </a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { -->&nbsp;역시 CIFAR-10 데이터를 사용했으며 BN(Batch Normalization)과 ReLU를 다양한 시점에 적용해 보았다. 크게 Addition 단계 전에 Activation을 적용하는 'Pre-Activation'과 그것과 반대인 'Post-Activation'의 영향력을 알아보는 것이 중심 화두였으며, 실험 결과 '<b>Pre-Activation</b><span>' 부문의 (e)가 가장 결과가 좋았다. 저자들은 그 이유가 최적화가 쉽고 오버피팅이 감소하기 때문이라고 분석했다.<br></span><span><br></span><span></span><!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+<div class="se_component se_sectionTitle ">
+    <div class="se_sectionArea se_align-left">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_H3 se_fw_bold"
+            			style="color: ;
+                        text-decoration: inherit;
+                        font-style: inherit;
+                        ">
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <h6 class="se_textarea"><!-- SE3-TEXT { -->4. 결론<!-- } SE3-TEXT --></h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+<div class="se_component se_paragraph default">
+    <div class="se_sectionArea">
+        <div class="se_editArea">
+            <div class="se_viewArea se_ff_nanumgothic se_fs_T3 se_align-left" >
+                <div class="se_editView">
+                    <div class="se_textView">
+                        <p class="se_textarea"><!-- SE3-TEXT { -->&nbsp;기존 ResNet 철학의 의미를 논리적으로 분석하고 더 개선된 모델을 제시한 추가 논문으로, ResNet을 더 이해하고 싶다면 읽어볼 가치가 충분하다. 개인적으로는 여전히 Identity Mapping에 대해 완벽한 이해가 이루어졌다고 생각하지는 않기 때문에 더 공부를 해봐야 할 것 같다.<!-- } SE3-TEXT --></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<!-- SE_DOC_CONTENTS_END -->
+<div class="__se_doc_title_end" id="se_doc_contents_end"></div>
+<div id="SEDOC-1540898874318--1822842388_se_doc_footer" class="se_doc_footer"></div>
+</div>
+		
+
+		
+		
+	</div>
+
+	<div class="_checkVisible"></div>
+	
+	
+
+	
+	<div id="blog_fe_feed"></div>
+</div>
+
+
+<div class="social_plugin_property" style="display:none">{&#034;title&#034;:&#034;CNN 모델 탐구 (6-2) Identity Mapping in ResNet&#034;,&#034;source&#034;:&#034;https://blog.naver.com/siniphia/221387516366&#034;,&#034;blogName&#034;:&#034;How Deep..&#034;,&#034;domainIdOrBlogId&#034;:&#034;siniphia&#034;,&#034;nicknameOrBlogId&#034;:&#034;Paris Lee&#034;,&#034;logNo&#034;:221387516366,&#034;smartEditorVersion&#034;:3,&#034;meDisplay&#034;:true,&#034;lineDisplay&#034;:true,&#034;outsideDisplay&#034;:false,&#034;cafeDisplay&#034;:true,&#034;blogDisplay&#034;:true}</div>
+
+	</div>
+	<div id="_loading2" class="rego_loading loading_end" style="display:none">
+        <div class="align"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    </div>
+</div>
+
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="https://ssl.pstatic.net/t.static.blog/nmobile/versioning/LegoCommonJS1-48436828_https.js" charset="UTF-8"></script>
+
+
+    
+        <script type="text/javascript" src="https://ssl.pstatic.net/t.static.blog/nmobile/versioning/LegoCommonMinifiedJS2-1447560115_https.js" charset="UTF-8"></script>
+    
+    
+
+
+<script type="text/javascript">
+jindo.m.patch("1.12.0").add({
+    "useTimingFunction" : function() {
+        var htOsInfo = jindo.m.getOsInfo();
+        if (htOsInfo.ios && parseInt(htOsInfo.version, 10) >= 6) {
+            return -1;
+        }
+    }
+});
+
+$Event.prototype.getEventElement = function(sTargetTagName, sTargetClassName, nMaxDepth) {
+	var el = this.element;
+	var wel = $Element(this.element);
+
+	var sTagName = 'a|button';
+	var sClassName = null;
+
+	var nDepth = typeof nMaxDepth == 'undefined' ? 5 : nMaxDepth;
+
+	if (typeof el.tagName == "undefined") return wel;
+	if (typeof sTargetTagName != "undefined") sTagName = sTargetTagName;
+	if (typeof sTargetClassName != "undefined") sClassName = sTargetClassName;
+
+	var oTagNameRegex = new RegExp("^(" + sTagName + ")$", "i");
+	if (oTagNameRegex.test(el.tagName) && (sClassName == null || wel.hasClass(sClassName))) {
+		return wel;
+	} else {
+		var welParents = wel.parent(function(v) {
+			if (v.$value().nodeType != 1) {
+				return false;
+			}
+
+			if (sTargetClassName) {
+				return oTagNameRegex.test(v.$value().tagName) && v.hasClass(sClassName);
+			}
+
+			return oTagNameRegex.test(v.$value().tagName);
+		}, nDepth);
+
+		return welParents != null && welParents.length > 0 ? welParents[0] : wel;
+	}
+}
+
+
+var doc = document.documentElement;
+doc.setAttribute('data-useragent',navigator.userAgent);
+
+var blogOwner = false;
+var rightClickOpenYn = false;
+var rightClickCalloutToggle = true;
+var isJeagleDebug = false;
+
+</script>
+
+
+
+
+<script type="text/javascript">
+    function ImageLazyLoader(selectors) {
+        this.selectors = selectors;
+        var info = $Element("_post_property");
+        this.editorVersion = info.attr("editorversion");
+    }
+
+    ImageLazyLoader.prototype.loadImages = function () {
+        if (this.editorVersion != "3" && this.editorVersion != "4") {
+            return;
+        }
+
+        var containers = jindo.$$(this.selectors);
+        $A(containers).forEach($Fn(function (element) {
+            this.loadImagesForEachContainer($Element(element));
+        }, this).bind())
+    }
+
+    var imageLazyLoadVisible;
+
+    ImageLazyLoader.prototype.loadImagesForEachContainer = function (postContentArea) {
+        $A(postContentArea.queryAll("img")).forEach($Fn(function (img) {
+            img.addClass("_lazy-loading-target-image");
+        }, this).bind())
+
+        $A(postContentArea.queryAll("video._gifmp4")).forEach($Fn(function (img) {
+            img.addClass("_lazy-loading-target-image");
+        }, this).bind())
+
+        imageLazyLoadVisible = new jindo.m.Visible(document, {
+            sClassName : "_lazy-loading-target-image",
+            nExpandSize : 1000
+        });
+
+        jindo.$Fn(function() {
+            imageLazyLoadVisible.check(30);
+        }).attach(window, 'scroll').attach(window, 'resize').attach(window, 'touchend').attach(window, 'touchmove').attach(window, 'touchstart');
+
+
+
+        imageLazyLoadVisible.attach({
+            'visible' : function(oCustomEvent) {
+                var welTarget = $Element(oCustomEvent.elTarget);
+
+                // mp4 gif가 로드되지 않았을경우 gif로 로드 시킨다
+                var mp4LoadFallback = function() {
+                    var gifUrl = welTarget.attr("data-gif-url");
+                    if (!gifUrl || welTarget.attr("poster") === gifUrl) {
+                        return;
+                    }
+                    welTarget.attr("poster", gifUrl);
+                }
+
+                // gifmp4인 경우 재생처리
+                if (welTarget.hasClass("_gifmp4") && welTarget._element.tagName === "VIDEO") {
+                    welTarget._element.play()
+                        .then(function() {
+                            // Android 최대 16개 동시 재생되고, 그 외엔 error 객체에 초기화 에러 처리됨
+                            // 에러코드 설명 https://udn.realityripple.com/docs/Web/API/MediaError
+                            if (!!welTarget._element.error && welTarget._element.error.code === 3) {
+                                mp4LoadFallback();
+                            }
+                        })
+                        .catch(mp4LoadFallback);
+                    return;
+                }
+
+                if(!welTarget.attr("data-lazy-src")){
+                    return;
+                }
+                welTarget.attr("src", welTarget.attr("data-lazy-src"));
+                welTarget.attr("data-lazy-src", '');
+            },
+            'invisible' : function(oCustomEvent) {
+                var welTarget = $Element(oCustomEvent.elTarget);
+
+                // 화면에서 벗어나면 정지 처리
+                if (welTarget.hasClass("_gifmp4") && welTarget._element.tagName === "VIDEO") {
+                    welTarget._element.pause();
+                    return;
+                }
+            }
+        });
+        imageLazyLoadVisible.check();
+    }
+
+    $Fn(function() {
+        var imageLazyLoader = new ImageLazyLoader(".se-main-container,.__se_component_area");
+        imageLazyLoader.loadImages();
+    }).attach(window, "DOMContentLoaded");
+</script>
+
+
+
+
+<script type="text/javascript">window.feCdnPublicPath='https://feblog.pstatic.net/module/real/';</script>
+
+    
+        
+        <script type="text/javascript" charset="utf-8" defer="defer" src="https://feblog.pstatic.net/module/real/postView/postView_3.2.0/js/postView.js"></script>
+    
+    
+
+<script src="https://ssl.pstatic.net/t.static.blog/nmobile/versioning//common/lib/jquery/1.12.4/jquery-1.12.4.min-049104e_https.js"></script>
+
+<script type="text/javascript">
+// document.domain = 'naver.com';
+// BLG-12120: FE(InfluencerLayer) 킬스위치 브리지 — newRecommendationBlockView.isInfluencerSdkOn으로 전달
+var isInfluencerSdkOn = true;
+var nilOptions = {
+    devMode: "true"=="false"
+};
+
+
+$Element(window).attach("error", function() {
+    var oImgAndVideoHandler;
+    if (document.readyState == "complete") {
+        
+        oImgAndVideoHandler = new ImgAndVideoHandler(function(){}, isInApp);
+        oImgAndVideoHandler.loadOnError();
+    } else {
+        window.onload = function() {
+            oImgAndVideoHandler = new ImgAndVideoHandler(function(){}, isInApp);
+            oImgAndVideoHandler.loadOnError();
+        }
+    }
+});
+
+var gUrlMap = {
+    'PostView' : '/PostView.naver',
+    'CommentList' : '/CommentList.naver', // AngularJS
+    'ScrapToBlog' : '/ScrapToBlog.naver',
+    'ScrapToCafe' : '/ScrapToCafe.naver',
+    'PostUpdateSetInfoForm' : '/PostUpdateSetInfoForm.naver',
+
+    'Login' : '/Login.naver',
+    'Logout' : '/Logout.naver',
+    'PostDelete' : '/PostDelete.naver',
+    'FirstWriterRecommendBuddyCheckAsync' : '/rego/FirstWriterRecommendBuddyCheckAsync.naver',
+    'PhotoViewer' : 'm.photoviewer.naver.com',
+
+    'PhotoOriginal' : 'https://blogfiles.pstatic.net',
+    'PhotoThumbnail' : 'https://mblogthumb-phinf.pstatic.net',
+    'CheckIn' : '/CheckIn.naver',
+    'OtherCheckIn' : '/OtherCheckIn.naver'
+};
+var gLoginUrl = 'https://nid.naver.com/nidlogin.login?svctype=262144';
+var gMobileUrl = 'https://m.blog.naver.com';
+var gBlogCommandUrl = 'https://command.blog.naver.com';
+var blogCommandReadApiOn = 'true' === 'true';
+
+
+var showCoupon = 'false' === 'true';
+
+var naverId = "siniphia";
+var blogId = "siniphia";
+var bLoginUser = true;
+var userNaverId = "dreamcatcher0329";
+var blogNicknameOrBlogId = "Paris Lee";
+var gMCA = JSON.parse('{"mobileInAppType":"NOTINAPP","mobileBrowser":{"type":"UNDEFINED","version":0.0,"android":false,"isAndroid":false,"androidGingerbread":false,"isDolfin":false,"isOpera":false,"opera":false,"dolfin":false,"safari":false},"supportToolButton":false,"supportHappybeanWrite":false,"supportPostAlbumApp":false,"supportDaliyWrite":false,"supportVideoViewer":false,"stampEnabledAppVersion":false,"lazyLoadableBrowser":false,"iOSMenuNavigationV2":false,"iOSMenuNavigationV1":false,"supportNaverExtension":true,"iOS7":false,"inAppVersion":"2.0.0","inAppYn":false,"isAndroidApp":false,"isIOSApp":false,"notInAppSafariOrAndroidBrowser":false,"naverServiceAppInstallUrl":"/services.html","androidNewStyleAppVersion":false,"supportBuddyAppPushAndBuddyInvitation":false,"stampEnabledInBuddyListAppVersion":false,"marketPostUpdatableAppVersion":false,"notDASupportCustomSchemeInAndroid":false,"supportReportInAndroid":false,"isNaverInApp":false,"isBlogInApp":false,"blogAppInstallUrl":"http://m.naver.com/services.html"}');
+var gsPostTitle = "CNN 모델 탐구 (6-2) Identity Mapping in ResNet : 네이버 블로그";
+var gnCategoryNo = 22;
+
+var gsLocationOrigin = "https://m.blog.naver.com";
+var sStartLogNo = '221387516366';
+var sNavType = '';
+var sDirectorySeq = '';
+var sBuddyGroupId = '';
+
+var gLogNo = '221387516366';
+var isScrapPost = false;
+
+
+var readOnlyStatus = false;
+var readOnlyStatusAll = false;
+var readOnlyLinkErrorMsgMobile = '블로그 점검 중으로 기존 글 삭제 댓글 답글 공감 이웃추가 구독하기 새글OFF 그룹이동 기능이 제한됩니다.';
+
+
+
+
+var gBrowserType = "UNDEFINED";
+var inAppVersion = "2.0.0";
+var isInApp = false;
+var noSendToStat = false;
+var isSupportVideoViewer = false;
+
+var userId = "dreamcatcher0329";
+var scrapedInfo = {
+		bMemo : false,
+		logNo : 0,
+		nOpenType : 2
+	};
+
+var gdid = "90000003_00000000000000338BB969CE";
+var postTitle = 'CNN \uBAA8\uB378 \uD0D0\uAD6C (6-2) Identity Mapping in ResNet';
+var lcsUrl = "https://m.blog.naver.com/PostView.naver?blogId=siniphia&logNo=221387516366";
+var lcsUrlBase = "https://m.blog.naver.com/PostView.naver?blogId=siniphia&logNo=221387516366";
+var buddyController = null;
+var gfMarketUrl = "http://m.gfmarket.naver.com";
+var gnMaxNoticePostCount = 5;
+
+var isWritedByApp = false;
+
+var isWritedByMobileWeb = false;
+
+var isNilAnalystLeaveEvent = "true";
+
+var angularConfig = {"isDev":false,"staticResourceUrl":"https://ssl.pstatic.net/t.static.blog","lcsUrl":"lcs.naver.com","revision":"079bdac","jeagleEyeDebug":false,"deployPhase":"release","countryCode":"NONE","isInApp":false,"isAndroidApp":false,"isIOSApp":false,"inAppScheme":"naverblog://blogapp","inAppVersion":"2.0.0","isSupportMarketNotification":false};
+var ngReadOnlyStatus = {"isReadOnly":false,"startTime":null,"endTime":null,"reason":null,"usageTip":null,"maintenanceType":null};
+var urlMap = {"commonStat":"https://blog.stat.naver.com","likeit":"https://blog.like.naver.com","ugcmarketthumb":"https://ugcmk-phinf.pstatic.net","section":"https://section.blog.naver.com","dthumb":"https://dthumb-phinf.pstatic.net/?src=","gfmarket_mobile":"http://m.gfmarket.naver.com","blog":"https://blog.naver.com","naver_openmain":"https://openmain.pstatic.net","guestbook":"https://guestbook.blog.naver.com","gfmarket_thumb":"https://storep-phinf.pstatic.net","beyond_analytics":"https://scv-blog.io.naver.com/jackpotlog/v1/logs","sellerBlog":"https://seller.blog.naver.com","module_moment":"https://api-moment.blog.naver.com","likeitcdn":"https://static-like.pstatic.net","nmobile":"https://m.blog.naver.com","module_guestbook":"https://api-guestbook.blog.naver.com","naverCommentApiProxyUrl":"https://apis.naver.com/commentBox/blogid","pay":"https://new-m.pay.naver.com","naverCommentApiUrl":"https://apis.naver.com/commentBox/cbox9","spi":"https://ssl.pstatic.net/spi","blogprofilethumb":"https://blogpfthumb-phinf.pstatic.net","mobileNaver":"http://m.naver.com","mobilemovieplayer":"https://sstatic-rmcnmv.pstatic.net","https_nmobile":"https://m.blog.naver.com","naverCommentStaticUrl":"https://ssl.pstatic.net/static.cbox"};
+var zookeeper = {"value":{"feed.thumbnail.display.percent":"on","anigif.display.percent":"on"},"onoff":{"guestbook.module.dummy.type":"on","mobile.home.video.view":"on"},"option":{"istestid":"false"}};
+
+var gsCategoryName = "\uB17C\uBB38\uB9AC\uBDF0";
+var gsBlogOwnerYn = blogOwner ? "Y" : "N";
+var gsTagName = "";
+var gsSessionId = "";
+var editorViewerUrl = "https://editor-static.pstatic.net/v/basic/1.78.1/se.viewer.js?v=1.78.1-20260807143758";
+var thumbnailPercent = "100";
+var searchVid = "";
+var videoAutoPlay = true;
+var rproductId = '';
+var gSeVersion = 3;
+var videoInfraSid = 2;
+var isDevPhase = "false";
+var isStagePhase = "false";
+var postAdvertiseEnableYN = true;
+var openType = 2;
+var sellerNo = '0';
+var hasProduct = 'false' === 'true';
+var temporaryStopSeller = 'false' === 'true';
+var leaveRequestSeller = 'false' === 'true';
+var tradeInterruptionSeller = 'false' === 'true';
+var feEnv = 'real';
+var productList = JSON.parse('[]');
+var feMobileUrl= "https://fe-m.blog.naver.com";
+var blogModuleJs= "https://feblog.pstatic.net/module/real/market/market_2.0.0/js/market.js";
+var firstThumbnailUrlPath = '';
+var productCount = '0';
+var nilNtmLibUrl = "https://ssl.pstatic.net/t.static.blog/nmobile/versioning//common/js/nilForNtm-89afd2f_https.js";
+var gbIsNotOpenBlogUser = "false" === "true";
+var itemFactoryDomainDisabled = 'true' === 'true';
+
+var isBuyWithMyOwnMoneyPost = 'false' === 'true';
+var isBuyWithMyOwnMoneyEnableApp = 'true' === 'true';
+var isEndReadCompleteBAMetricON = 'true' === 'true';
+var gladAdvertiseUrl = 'https://api.tv.naver.com'
+var blogNo = '109044788';
+
+
+var beyondAnalyticsUrl = 'https://scv-blog.io.naver.com/jackpotlog/v1/logs';
+var baUserKey = '16333b3c327b8a4182032e2d815f6553082f0ec48cffa03f73d7b9dc2e6fa190';
+var userIdNo = "2cApuu";
+var fromRecommendationType = '';
+
+
+var newRecommendationBlockView = JSON.parse('{\"env\":\"real\",\"logNo\":221387516366,\"title\":\"CNN \uBAA8\uB378 \uD0D0\uAD6C (6-2) Identity Mapping in ResNet\",\"blogNo\":109044788,\"blogId\":\"siniphia\",\"categoryNo\":22,\"isForeignLocation\":false,\"feedStartBannerEnabled\":false,\"directorySeq\":0,\"logCode\":0,\"writingMaterialType\":0,\"blocks\":[{\"type\":\"POPULAR_POST\",\"enabled\":true,\"searchKeyword\":\"\",\"contentLineage\":{\"contentType\":\"\",\"contentSource\":\"\",\"contentTag\":\"\",\"recommendBlockCode\":\"\",\"initialTrackingCode\":\"others\"}},{\"type\":\"AIRS_MIXED\",\"enabled\":true,\"searchKeyword\":\"\",\"contentLineage\":{\"contentType\":\"\",\"contentSource\":\"\",\"contentTag\":\"\",\"recommendBlockCode\":\"\",\"initialTrackingCode\":\"others\"}},{\"type\":\"BUDDY_SIMILAR_FAVORITE_POST\",\"enabled\":true,\"searchKeyword\":\"\",\"contentLineage\":{\"contentType\":\"blog_post\",\"contentSource\":\"blog-rcmd\",\"contentTag\":\"\",\"recommendBlockCode\":\"blog_fd_nb1\",\"initialTrackingCode\":\"others\"}},{\"type\":\"BUDDY_RECENT_VISIT_POST\",\"enabled\":true,\"searchKeyword\":\"\",\"contentLineage\":{\"contentType\":\"blog_post\",\"contentSource\":\"blog-rcmd\",\"contentTag\":\"\",\"recommendBlockCode\":\"blog_fd_nb2\",\"initialTrackingCode\":\"others\"}},{\"type\":\"BUDDY_HIGHLIGHT_POST\",\"enabled\":true,\"searchKeyword\":\"\",\"contentLineage\":{\"contentType\":\"blog_post\",\"contentSource\":\"blog-rcmd\",\"contentTag\":\"\",\"recommendBlockCode\":\"blog_fd_nb3\",\"initialTrackingCode\":\"others\"}},{\"type\":\"AIRS_ONE_COL_1\",\"enabled\":true,\"searchKeyword\":\"\",\"contentLineage\":{\"contentType\":\"\",\"contentSource\":\"\",\"contentTag\":\"\",\"recommendBlockCode\":\"\",\"initialTrackingCode\":\"others\"}},{\"type\":\"AIRS_ONE_COL_2\",\"enabled\":true,\"searchKeyword\":\"\",\"contentLineage\":{\"contentType\":\"\",\"contentSource\":\"\",\"contentTag\":\"\",\"recommendBlockCode\":\"\",\"initialTrackingCode\":\"others\"}},{\"type\":\"AIRS_ONE_COL_3\",\"enabled\":true,\"searchKeyword\":\"\",\"contentLineage\":{\"contentType\":\"\",\"contentSource\":\"\",\"contentTag\":\"\",\"recommendBlockCode\":\"\",\"initialTrackingCode\":\"others\"}}],\"categoryBlockEnabled\":true,\"recommendationCategory\":\"ETC\",\"nudgeCategory\":\"EXTERNAL\",\"userInfo\":{\"loginUserId\":\"dreamcatcher0329\",\"domainIdOrUserId\":\"dreamcatcher0329\",\"blogNo\":164659714,\"relationType\":3,\"ownerRelationType\":3,\"nickname\":\"dre\",\"profileThumbnailUrl\":\"\",\"notOpenBlogUser\":false},\"baLogData\":{\"trackingCode\":\"external\",\"userKey\":\"16333b3c327b8a4182032e2d815f6553082f0ec48cffa03f73d7b9dc2e6fa190\",\"categoryRelatedContentLineage\":{\"contentType\":\"blog_post\",\"contentSource\":\"blog-rcmd\",\"contentTag\":\"\",\"recommendBlockCode\":\"blog_fd_cate\",\"initialTrackingCode\":\"others\"}},\"initialTrackingCode\":\"others\",\"gdid\":\"90000003_00000000000000338BB969CE\",\"sessionId\":null,\"tagNames\":\"\",\"smartEditorType\":3,\"scrapYn\":false,\"searchKeyword\":\"\",\"advertise\":{\"adPostYn\":true,\"adContentYn\":true,\"adContentLocation\":0},\"saInfo\":null,\"inactiveAdPostBottomAdvertiseEnabled\":false,\"lineBannerList\":[{\"id\":101613,\"type\":\"l2\",\"imageUrl\":\"https:\/\/blogfiles.pstatic.net\/MjAyNjA4MjVfMjU4\/MDAxNzg3NjE5MjU4Njg1.0qz72g8qiqT0zLLpy8oF2Rp7Us1HMTETv-NRjLgAJOMg.s71olVgpytnJaI9sQZwV0UqybJBldWtUBnEBWpiZLMMg.PNG\/%EB%B8%94%EB%A1%9C%EA%B7%B8_MW_%EC%97%94%EB%93%9C_%ED%95%98%EB%8B%A8_232x200-1.png\/%EB%B8%94%EB%A1%9C%EA%B7%B8+MW+%EC%97%94%EB%93%9C+%ED%95%98%EB%8B%A8_232x200-1.png\",\"linkUrl\":\"https:\/\/mkt.naver.com\/p1\/atrb?channel_id=naver_blog_mwunder&campaign_id=2609-nvcalendar-001&target=https%3A%2F%2Fmkt.naver.com%2Fcalendar_deco%3Fdtm_source%3Dnaver_blog_mwunder%26dtm_medium%3Dmktatrb%26dtm_campaign%3D2609-nvcalendar-001\",\"subText\":\"\uB124\uC774\uBC84 \uCE98\uB9B0\uB354 \uAFB8\uBBF8\uAE30 \uCC4C\uB9B0\uC9C0\",\"mainText\":\"\uB9C8\uB8E8\uB294 \uAC15\uC950\uAC00\\\\n\uB124\uC774\uBC84 \uCE98\uB9B0\uB354\uC5D0 \uC3D9!\",\"bgColor\":\"#FFDB83\",\"textColor\":\"#000000\",\"isEvent\":false},{\"id\":101631,\"type\":\"l3\",\"imageUrl\":\"https:\/\/blogfiles.pstatic.net\/MjAyNjA4MzFfMTQ0\/MDAxNzg4MTQxNTc0MDIw.251tatFj4WRHHqQvpBaemi4O3kGgftwG0dMqssDdYFYg.3vuoax82BrZ3B66jM5fw8iYxL4RsWETv-GTorZzW_SMg.PNG\/MW_End_IMG.png\/MW_End_IMG.png\",\"linkUrl\":\"https:\/\/m.blog.naver.com\/blogpeople\/224395781305\",\"subText\":\"\uBE14\uB85C\uAC70 \uB300\uBC1C\uACAC \uD504\uB85C\uC81D\uD2B8\",\"mainText\":\"\uC911\uC2DD\uB9C8\uB140\uC758\\\\n\uBE14\uB85C\uADF8 \uC788\uC5B4\uC694!\",\"bgColor\":\"#250001\",\"textColor\":\"#FFFFFF\",\"isEvent\":false}],\"profileInfo\":{\"profileImageUrl\":\"https:\/\/blogpfthumb-phinf.pstatic.net\/MjAyMjA1MTNfMjQ4\/MDAxNjUyNDQxMTA3NDg1.eJ2NsDSgkwRkbkYSQh5IgKKswW3EKQKO4LtgoQXjVegg.6ZMXCDS7bBpHAWvNvOMbNPnPalSPms0hTMR-WCYa7NEg.PNG.siniphia\/profileImage.png\",\"nickName\":\"Paris Lee\",\"originalNickName\":\"Paris Lee\",\"directoryName\":\"IT\u00B7\uCEF4\uD4E8\uD130\",\"subscriberCount\":88,\"introduction\":\"- Deep Learning\\n- Computer Vision\\n- Medical Imaging\\n- Backend\\n- MLOps\",\"yearOfBlogBadgeDisplay\":false,\"suggestionBlogBadgeDisplay\":false,\"powerBlogBadgeDisplay\":false,\"officialBlogBadgeDisplay\":false,\"talkTalkUrl\":\"\",\"externalChannelViewList\":[],\"lastYearOfBlog\":0,\"isNaverMateBlog\":false,\"blackUser\":false,\"blackedByUser\":false,\"postFadeOut\":true},\"endPageRecommendRenderMargin\":0,\"readOnlyStatus\":false,\"lazyTest\":false,\"searchABTestInfo\":{\"abTestNo\":289,\"experimentNo\":572,\"variation\":\"B\",\"finished\":true},\"etcABTestInfo\":null,\"hotPostABTestInfo\":null,\"feedContainerId\":\"blog_fe_feed\",\"isTagHidden\":false,\"airsTag\":\"\",\"postTopic\":\"\",\"modal\":null,\"isReactionEnable\":false,\"isCommentEnable\":true,\"commentCount\":2,\"commentNoPosition\":null,\"thumbnailUrl\":\"https:\/\/blogthumb.pstatic.net\/MjAxODEwMjlfMTM1\/MDAxNTQwODA4MjYwNzIx.slUvOOhKPsQwCiyywFkCqj0vtfk_vw3PhbB35PGI8bAg.Qtkli0ylqpPitPtL8xp3pDg0O2EKC5fyH32Cgp9NONIg.PNG.siniphia\/image.png\",\"blogName\":\"How Deep is the Learning\",\"scrap\":{\"isScrapEnable\":false,\"isOutSideAllow\":false,\"scrapType\":2,\"shareCount\":0,\"isMemolog\":false,\"allOpenPost\":true},\"isShoppingApp\":false,\"influencerLevel\":0,\"adBucket\":null,\"isChangeLineBannerPosition\":true,\"postTopicInfo\":null,\"postTopics\":{\"short_ai_directory_name\":\"\uBD84\uB958\uB418\uC9C0\uC54A\uC74C\",\"directory_name\":\"\",\"full_ai_directory_name\":\"\uBD84\uB958\uB418\uC9C0\uC54A\uC74C\"},\"marketPost\":false,\"inApp\":false,\"fromSearchAddView\":false}');
+var newRecommendationSentryView = JSON.parse('{"env":"real","platform":"postView","sampleRate":0.1}');
+var endPageRecommendRenderMargin = 0;
+var isLikeCommentCountPlatformApiOn = 'false' === 'true';
+
+var scrappedPostLogNoOrLogNo = 221387516366;
+var scrappedPostDomainIdOrBlogIdOrBlogId = 'siniphia';
+
+var isPhotoViewerW966On = 'true' === 'true';
+
+var se3Fadeout = 'true' === 'true';
+
+var isEnableMaterialFeedLink = 'true' === 'true';
+
+var feConvertToggles = {"post.market.link":false,"post.social.plugin":false,"post.image.video.handler":false,"post.buddy.add.layer":true,"post.video.like":false,"post.se.one.init":false,"post.se2.thumbnail.scroll":true,"post.image.viewer":true,"post.ad.remove":false,"post.buy.with.my.own.money":true,"post.banner":false,"post.map":true,"post.inapp.app.scheme":false,"post.unused.files":false,"post.open.graph.video":false,"common.legacy.remove":false,"post.buddy.recommend.popup":false,"post.notice.setting":false,"post.blog.team.buddy.recommend":true,"common.stat.send":false,"common.layer.popup":true,"blog.pip.remove":false,"post.read.complete.log":true,"post.view.controller":false,"hamburger.menu":true,"category.list":true,"blog.block.release":false,"post.influencer.layer":true,"post.more.menu":true};
+
+// BLG-13081: 더보기(⋯) 메뉴 항목 노출·상태. flag ON 이면 FE(MoreMenu)가 이 값으로 레이어를
+// 구성한다. 조건식은 PostViewAsyncTpl.jsp 레거시 c:if 를 그대로 옮긴 것이고, 메뉴 마크업 자체는
+// 계속 레거시가 렌더한다 (flag 는 트리거만 FE 로 넘긴다).
+// 이 파일에 두는 이유: 레거시 메뉴 마크업은 SE 버전·인앱 여부로 템플릿 4종(jsp 2 · ftl 2)이
+// 갈리지만 PostView.jsp 는 항상 실행되므로 한 곳에서 전 구간을 커버한다.
+// editable 의 supportSE3·superUser 절: SE3+ 템플릿(TitleContentsPostViewHtmlForMobile.ftl:73)은
+// post.isWrittenBy(blogUser) 로 노출을 판정해 superuser(운영자)면 무조건 true 다 (Post.java:610-619).
+// SE2 이하 JSP 경로에는 이 분기가 없으므로 supportSE3 로 게이트해 템플릿별 parity 그대로 내린다
+// (advertiseVisible 의 supportSE3 게이트와 같은 원칙).
+var moreMenuPayload = {
+	
+	editable: false,
+	noticeEnabled: false,
+	noticePost: false,
+	postBlocked: false,
+	
+	blockType: '0',
+	advertiseVisible: false,
+	postAdvertiseEnabled: true,
+	
+	temporaryStopSeller: false,
+	leaveRequestSeller: false,
+	tradeInterruptionSeller: false,
+	
+	deletable: false,
+	
+	reportable: true,
+	reportUrl: "https:\/\/srp2.naver.com\/report?svc=BLG&exit=close&ctype=AA01&cwriterenc=QI%2FrkA8eVGNHmIY0dSNjmB10s%2B4u%2FL8FI7kNLXeTos0%3D&ctitle=CNN%20%EB%AA%A8%EB%8D%B8%20%ED%83%90%EA%B5%AC%20(6-2)%20Identity%20Mapping%20in%20ResNet&cwriter=sini****&dark=disable&memtype=Y&env=mobile&cnickname=sini****&vsvc=BLG&cid=siniphia%40%40109044788%40%40mylog%40%40221387516366&returl=",
+	shareUrl: "https:\/\/m.blog.naver.com\/siniphia\/221387516366",
+	shareCanonicalUrl: "https:\/\/m.blog.naver.com\/siniphia\/221387516366",
+	shareLogUrl: "https:\/\/proxy.blog.naver.com\/spi\/v1\/api\/shareLog",
+	
+	shareTitle: "CNN \uBAA8\uB378 \uD0D0\uAD6C (6-2) Identity Mapping in ResNet"
+};
+
+var blogNewsProxyUrl = "https://m.blog.naver.com/api/news/article";
+
+var isShoppingApp = 'false' === 'true';
+
+$Element(window).attach("load", function (event) {
+       setTimeout(
+        function() {
+            
+            productController = new ProductController(blogId, userId, gLogNo, sellerNo, hasProduct, productList, feEnv, firstThumbnailUrlPath, productCount, showCoupon);
+
+            var vodCloudPluginUrl = isDevPhase === 'true' ? "https://ssl.pstatic.net/t.static.blog/nmobile/versioning//lib/prismplayer/vodcloud-plugin/vodcloud-config.dev-d5a61c0_https.js" :
+                (isStagePhase === 'true' ? "https://ssl.pstatic.net/t.static.blog/nmobile/versioning//lib/prismplayer/vodcloud-plugin/vodcloud-config.stage-22e3471_https.js"
+                : "https://ssl.pstatic.net/t.static.blog/nmobile/versioning//lib/prismplayer/vodcloud-plugin/vodcloud-config.real-5601565_https.js");
+
+            postViewController = new PostViewController(blogId, sStartLogNo, sNavType, "false", "dreamcatcher0329"
+                , "https://ssl.pstatic.net/spi/js/release/ko_KR/splugin.m.js?"
+                , "https://ssl.pstatic.net/t.static.blog/nmobile/versioning//lib/prismplayer/prismplayer-mobile-1.10.1.min-0ebd352_https.js"
+                , vodCloudPluginUrl
+                , "false", "22", "", 0, isNilAnalystLeaveEvent
+				, "https://mybox.naver.com", editorViewerUrl
+                , "https://apis.naver.com/", false, '{}', '[]',
+                videoInfraSid, isDevPhase, isStagePhase, rproductId, hasProduct, temporaryStopSeller, leaveRequestSeller, "naver", tradeInterruptionSeller, nilNtmLibUrl,
+                gladAdvertiseUrl, scrappedPostLogNoOrLogNo, scrappedPostDomainIdOrBlogIdOrBlogId, isPhotoViewerW966On, isShoppingApp);
+            
+            postViewController.setFocusVideoId(searchVid);
+            postViewController.start();
+            
+
+            try {
+                lazyVersioningLoader.loadJs("https://ssl.pstatic.net/adimg3.search/adpost/js/ad.js");
+            } catch (e) {
+                console.log(e);
+            }
+        }, 0);
+
+
+        new BlogAppAdController().start();
+
+        buddyController = new BuddyController("siniphia");
+        buddyController.start();
+
+        lazyVersioningLoader.lazyJsLoader({
+            _ngbundle : function() {
+                angular.bootstrap($$.getSingle('._ngApp'), ['bgPostViewApp'], {
+                    strictDi: true
+                });
+            }
+        });
+});
+
+function lazyViewLoadForCallback(){
+    postViewController.lazyViewLoad();
+}
+
+function timerStop(){
+	postViewController.timerStop();
+}
+
+function _goToCheckInByPlaceId(placeId) {
+    postViewController._goToCheckInByPlaceId(placeId);
+}
+
+function _goToCheckInByBlogId(checkInDomainIdOrBlogId) {
+    postViewController._goToCheckInByBlogId(checkInDomainIdOrBlogId);
+}
+
+function _goToCheckInForeignPage(lon, lat) {
+    postViewController._goToCheckInForeignPage(lon, lat);
+}
+</script>
+
+<div class="_lazyLoadingList" _groupname="_ngbundle" _order="0" style="display:none"><!--/**https://ssl.pstatic.net/t.static.blog/nmobile/versioning/NgPostViewBundle-782797723_https.js**/--></div>
+<div class="_lazyLoadingList" _groupname="_ngbundle" _order="1" style="display:none"><!--/**https://ssl.pstatic.net/t.static.blog/nmobile/versioning/NgPostViewTemplate-70131088_https.js**/--></div>
+<script type="text/javascript" src="https://ssl.pstatic.net/t.static.blog/nmobile/versioning/LegoPostView-44643337_https.js" charset="UTF-8"></script>
+<script src="https://ssl.pstatic.net/tveta/libs/ssp-video/prod/ssp.web.sdk.js"></script>
+
+
+
+
+
+<script type="text/javascript">
+
+var safariBrowser = "SAFARI";
+var safariIpadBrowser = "SAFARI_IPAD";
+var androidBrowser = "ANDROID";
+var androidGalTabBrowser = "ANDROID_GALTAB";
+var androidHoneyCombBrowser = "ANDROID_HONEYCOMB";
+var dolfinBrowser = "DOLFIN";
+var operaBrowser = "OPERA";
+
+
+var gBrowserType = "UNDEFINED";
+var gBrowserVersion = "0.0";
+var isSafariBrowser = (gBrowserType == safariBrowser || gBrowserType == safariIpadBrowser);
+var isIos4xSafariBrowser = isSafariBrowser && (navigator.userAgent.match(/OS 4_3/i)) ? true : false;
+var isIos5xSafariBrowser = isSafariBrowser && (navigator.userAgent.match(/OS 5/i)) ? true : false;
+var isAndroidBrowser = (gBrowserType == androidBrowser) || (gBrowserType == androidGalTabBrowser) || (gBrowserType == androidHoneyCombBrowser);
+var isAndroid4xBrowser = isAndroidBrowser && (navigator.userAgent.match(/Android 4./i)) ? true : false;
+var isAndroid5xBrowser = isAndroidBrowser && (navigator.userAgent.match(/Android 5./i)) ? true : false;
+var isBelowAndroid5xBrowser = isAndroid4xBrowser || isAndroid5xBrowser;
+var isAndroidGingerbread = false;
+var isDefaultTextSupportingBrowserType = false;
+var gIsNotInAppSafariOrAndroidBrowser = false;
+var isSBrowser = (navigator.userAgent.match(/SamsungBrowser/i)) ? true : false;
+
+
+
+var gDeployPhase = ""; 
+
+var ReloadFile=(function(){var d=2500;var b={};var h={};var c=5;function k(o){var n=o.split(/\/+/g);var p=n[n.length-1].split("?")[0].split(".")[0];return p}function a(){var n=document.getElementsByTagName("script");for(var p=0;p<n.length;p++){var q=n[p].src;if(q!=""&&q.toLowerCase().indexOf("lazyloading")<0&&(q.toLowerCase().indexOf("blog.naver.com")>-1||q.toLowerCase().indexOf("blog.naver.net")>-1)){var o=k(q);var r=o+"_js";n[p].id=r;f(r,c);l(r,q)}}}function g(){var n=document.getElementsByTagName("link");for(var p=0;p<n.length;p++){var r=n[p].href;var q=n[p].type;if("text/css"==q.toLowerCase()&&r!=""&&r.toLowerCase().indexOf("lazyloading")<0&&(r.toLowerCase().indexOf("blog.naver.com")>-1||r.toLowerCase().indexOf("blog.naver.net")>-1)){var o=k(r);var s=o+"_css";n[p].id=s;f(s,c);e(s,r)}}}function l(q,o){i(q);if((typeof window.defineNHNJS=="undefined"||typeof window.defineNHNJS[q]=="undefined")&&b[q].retry++<b[q].maxRetry){var n=document.getElementById(q);var p=document.createElement("script");p.type="text/javascript";p.id=n.id;p.charset=n.charset;p.src=o+"?"+new Date().getTime()+"_"+Math.floor(Math.random()*100)+1;n.parentNode.removeChild(n);document.getElementsByTagName("body")[0].appendChild(p);m(q,function(){l(q,o)})}}function m(o,n){if(b[o].maxRetry>1){h[o]=setTimeout(n,d)}}function f(o,n){b[o]={retry:0,maxRetry:n||1}}function i(n){if(typeof h[n]!="undefined"){clearTimeout(h[n]);h[n]=null}}function e(o,n){document.addEventListener("DOMContentLoaded",function(){j(o,n)},false)}function j(u,q){i(u);if(b[u].retry++<b[u].maxRetry){var t="defineNHNCSS_"+u;var s=document.getElementById(t);if(!s){var n=document.createElement("div");n.id=t;n.style.display="none";document.body.appendChild(n);s=document.getElementById(t)}var o=document.defaultView.getComputedStyle(s,"").getPropertyValue("color");if(o=="rgb(0, 0, 0)"){var p=document.getElementById(u);var r=document.createElement("link");r.rel="stylesheet";r.type="text/css";r.id=p.id;r.charset=p.charset;r.href=q+"?"+new Date().getTime()+"_"+Math.floor(Math.random()*100)+1;p.parentNode.removeChild(p);document.getElementsByTagName("body")[0].appendChild(r);m(u,function(){j(u,q)})}}}return{js:function(n){try{if(n==null||n=="local"){return}a()}catch(o){}},css:function(n){try{if(n==null||n=="local"){return}g()}catch(o){}}}})();if((isSafariBrowser||isAndroidBrowser)&&typeof gDeployPhase!="undefined"&&gDeployPhase!=""){if(window.attachEvent){window.attachEvent("onload",function(){ReloadFile.js(gDeployPhase)})}else{window.addEventListener("load",ReloadFile.js(gDeployPhase),false)}ReloadFile.css(gDeployPhase)};
+</script>
+
+
+</body>
+
+<script>
+    
+    var currentToken;
+    function callbackFromFESignUp(event) {
+        var data = event.data;
+
+        if(event.origin != window.location.origin){
+            return;
+        }
+
+        if(data.token != currentToken){
+            return;
+        }
+
+        data.refresh && location.reload();
+    }
+
+    window.addEventListener('message', callbackFromFESignUp, false);
+</script>
+
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            document.addEventListener("click", function(e) {
+                var materialLink = e.target.closest("a[data-linktype='material']");
+                if (materialLink) {
+                    e.preventDefault();
+                    var linkData = materialLink.getAttribute("data-linkdata");
+                    if (linkData) {
+                        try {
+                            var parsedData = JSON.parse(linkData);
+                            if (typeof materialResolver === "function") {
+                                materialResolver(parsedData);
+                            }
+                        } catch (err) {
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script src="https://ssl.pstatic.net/t.static.blog/nmobile/versioning//common/lib/ntm-noparam/ntm-blog-web-c326aba_https.js"></script>
+
+
+<script type="text/javascript" src="https://ssl.pstatic.net/t.static.blog/nmobile/versioning/NtmBaLog-1207694742_https.js" charset="UTF-8"></script>
+<script type="text/javascript" src="https://ssl.pstatic.net/t.static.blog/nmobile/versioning/Nlog2-155068634_https.js" charset="UTF-8"></script>
+
+
+<script>
+    var baParams = {};
+    // [BA] 공통
+    baParams.baUrl = "https://scv-blog.io.naver.com/jackpotlog/v1/logs";
+    baParams.baSceneId = 'post_end';
+    
+    baParams.baUserKey = '16333b3c327b8a4182032e2d815f6553082f0ec48cffa03f73d7b9dc2e6fa190';
+    
+    // [BA] post_end
+    
+    baParams.blogNo = '109044788';
+    
+    // [BA] post_end
+    
+    baParams.logNo = '221387516366';
+    // [BA] p_add_date
+    baParams.postWriteDate = '1540813372492';
+    
+    // [BA] blog_end
+    
+    baParams.ownerRelationType = '3';
+    
+    // [BA] post_end
+    
+    baParams.userRelationType = '3';
+    
+    // [BA] post_end
+    baParams.isInApp = false;
+
+    baParams.initialTrackingCode = "others";
+    baParams.postendTemplateType = "feed_card_others_type";
+    baParams.attachmentSetCount = {"korea_map":0,"foreign_map":0,"writing_material_info":0,"buy_with_my_own_money_shopping":0,"buy_with_my_own_money_visit_order":0,"buy_with_my_own_money_visit_reservation":0,"buy_with_my_own_money_visit_receipt":0,"buy_with_my_own_money_visit_payment":0,"image":7,"book_count":0,"movie_count":0,"tv_count":0,"music_count":0,"shopping_count":0,"show_count":0,"news_count":0,"sports_count":0,"stock_count":0,"realestate_count":0,"shopping_connect":0};
+    baParams.postTopics = {"short_ai_directory_name":"분류되지않음","directory_name":"","full_ai_directory_name":"분류되지않음"};
+
+    var nlog2Params = {};
+    nlog2Params.page_code = '2000003513';
+    nlog2Params.page_code_alias = 'content_detail';
+
+    
+    nlog2Params.blogNo = 109044788;
+    
+    
+    nlog2Params.logNo = 221387516366;
+    nlog2Params.postWriteDate = '1540813372492';
+    
+    
+    nlog2Params.ownerRelationType = 3;
+    
+    
+    nlog2Params.userRelationType = 3;
+    
+    nlog2Params.isInApp = false;
+
+    nlog2Params.initialTrackingCode = "others";
+    nlog2Params.postendTemplateType = "feed_card_others_type";
+    nlog2Params.attachmentSetCount = '{"korea_map":0,"foreign_map":0,"writing_material_info":0,"buy_with_my_own_money_shopping":0,"buy_with_my_own_money_visit_order":0,"buy_with_my_own_money_visit_reservation":0,"buy_with_my_own_money_visit_receipt":0,"buy_with_my_own_money_visit_payment":0,"image":7,"book_count":0,"movie_count":0,"tv_count":0,"music_count":0,"shopping_count":0,"show_count":0,"news_count":0,"sports_count":0,"stock_count":0,"realestate_count":0,"shopping_connect":0}';
+    nlog2Params.postTopics = '{"short_ai_directory_name":"분류되지않음","directory_name":"","full_ai_directory_name":"분류되지않음"}';
+
+    NmobilePageViewSender.init(baParams, nlog2Params);
+</script>
+
+
+</html>

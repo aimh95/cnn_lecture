@@ -1,0 +1,466 @@
+ Lecture 11-1
+
+    CNN introduction
+
+Sung Kim <hunkim+mr@gmail.com>
+'The only limit is your imagination'
+
+       http://itchyi.squarespace.com/thelatest/2012/5/17/the-only-limit-is-your-imagination.html
+              Lecture 7:
+Convolutional Neural Networks
+
+http://cs231n.stanford.edu/
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 1  27 Jan 2016
+A bit of history:
+
+Hubel & Wiesel,                                Lecture 7 - 7  27 Jan 2016
+1959
+
+ RECEPTIVE FIELDS OF SINGLE
+ NEURONES IN
+ THE CAT'S STRIATE CORTEX
+
+1962
+
+ RECEPTIVE FIELDS, BINOCULAR
+ INTERACTION
+ AND FUNCTIONAL ARCHITECTURE IN
+ THE CAT'S VISUAL CORTEX
+
+1968...
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson
+preview:
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 22  27 Jan 2016
+   Start with an image (width x hight x depth)
+
+32x32x3 image
+          Let's focus on a small area only
+
+32x32x3 image
+Let's focus on a small area only (5x5x3)
+
+32x32x3 image  5x5x3 filter
+          Get one number using the filter
+
+                         one number!
+
+32x32x3 image
+Get one number using the filter
+
+               one number! =Wx+b  =ReLU(Wx+b)
+
+                5x5x3 filter
+
+32x32x3 image
+Let's look at other areas with the same filter (w)
+
+                         one number!
+
+32x32x3 image
+Let's look at other areas with the same filter (w)
+
+                           one number!
+
+32x32x3 image
+Let's look at other areas with the same filter (w)
+
+                                 one number!
+
+32x32x3 image
+Let's look at other areas with the same filter (w)
+
+                         one number!
+
+32x32x3 image
+Let's look at other areas with the same filter (w)
+
+               one number!
+
+                            How many numbers
+                                 can we get?
+
+32x32x3 image
+A closer look at spatial dimensions:
+
+            7
+                                   7x7 input (spatially)
+                                   assume 3x3 filter
+
+                             7
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 24  27 Jan 2016
+A closer look at spatial dimensions:
+
+            7
+                                   7x7 input (spatially)
+                                   assume 3x3 filter
+
+                             7
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 25  27 Jan 2016
+A closer look at spatial dimensions:
+
+            7
+                                   7x7 input (spatially)
+                                   assume 3x3 filter
+
+                             7
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 26  27 Jan 2016
+A closer look at spatial dimensions:
+
+            7
+                                   7x7 input (spatially)
+                                   assume 3x3 filter
+
+                             7
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 27  27 Jan 2016
+A closer look at spatial dimensions:
+
+            7
+                                   7x7 input (spatially)
+                                   assume 3x3 filter
+
+                                   => 5x5 output
+                             7
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 28  27 Jan 2016
+A closer look at spatial dimensions:
+
+            7
+                                            7x7 input (spatially)
+                                            assume 3x3 filter
+                                            applied with stride 2
+
+                             7
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 29      27 Jan 2016
+A closer look at spatial dimensions:
+
+            7
+                                            7x7 input (spatially)
+                                            assume 3x3 filter
+                                            applied with stride 2
+
+                             7
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 30      27 Jan 2016
+A closer look at spatial dimensions:
+
+            7
+                                            7x7 input (spatially)
+                                            assume 3x3 filter
+                                            applied with stride 2
+                                            => 3x3 output!
+
+                             7
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 31      27 Jan 2016
+     N       Output size:
+       F     (N - F) / stride + 1
+
+F         N  e.g. N = 7, F = 3:
+             stride 1 => (7 - 3)/1 + 1 = 5
+
+             stride 2 => (7 - 3)/2 + 1 = 3
+
+             stride 3 => (7 - 3)/3 + 1 = 2.33 :\
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 34  27 Jan 2016
+In practice: Common to zero pad the border
+
+000000  e.g. input 7x7
+0       3x3 filter, applied with stride 1
+0       pad with 1 pixel border => what is the output?
+0
+0
+
+                                               (recall:)
+                                               (N - F) / stride + 1
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 35        27 Jan 2016
+In practice: Common to zero pad the border
+
+000000  e.g. input 7x7
+0       3x3 filter, applied with stride 1
+0       pad with 1 pixel border => what is the output?
+0
+0       7x7 output!
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 36  27 Jan 2016
+In practice: Common to zero pad the border
+
+000000  e.g. input 7x7
+0       3x3 filter, applied with stride 1
+0       pad with 1 pixel border => what is the output?
+0
+0       7x7 output!
+        in general, common to see CONV layers with
+        stride 1, filters of size FxF, and zero-padding with
+        (F-1)/2. (will preserve size spatially)
+        e.g. F = 3 => zero pad with 1
+
+             F = 5 => zero pad with 2
+             F = 7 => zero pad with 3
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 37  27 Jan 2016
+               Swiping the entire image
+
+  5x5x3 filter 1
+
+32x32x3 image
+               Swiping the entire image
+
+  5x5x3 filter 2
+
+32x32x3 image
+     Swiping the entire image
+
+6 filters (5x5x3)
+
+               activation maps
+                    (?, ?, ?)
+
+32x32x3 image
+                 Convolution layers
+
+32x32x3 image
+                 Convolution layers
+
+32x32x3 image
+                 Convolution layers
+
+            How many weight variables? How to set them?
+
+32x32x3 image
+Preview                                                        [From recent Yann
+                                                               LeCun slides]
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 19  27 Jan 2016
+preview:
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 22  27 Jan 2016
+        Lecture 11-2
+
+CNN introduction: Max pooling and others
+
+               Sung Kim <hunkim+mr@gmail.com>
+preview:
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 22  27 Jan 2016
+      Pooling layer (sampling)
+
+conv
+layer
+       Pooling layer (sampling)
+
+conv
+layer
+
+       resize (sampling)
+      Pooling layer (sampling)
+
+conv
+layer
+   MAX POOLING
+
+   Single depth slice
+
+x  1124
+
+                       max pool with 2x2 filters  68
+                                                  34
+   5 6 7 8 and stride 2
+
+   3210
+
+   1234
+
+                           y                   Lecture 7 - 55  27 Jan 2016
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson
+   MAX POOLING
+
+   Single depth slice
+
+x  1124
+
+                       max pool with 2x2 filters  68
+                                                  34
+   5 6 7 8 and stride 2
+
+   3210
+
+   1234
+
+                           y                   Lecture 7 - 55  27 Jan 2016
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson
+Fully Connected Layer (FC layer)
+
+  - Contains neurons that connect to the entire input volume, as in ordinary Neural
+      Networks
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 58  27 Jan 2016
+    [ConvNetJS demo: training on CIFAR-10]
+
+http://cs.stanford.edu/people/karpathy/convnetjs/demo/cifar10.html
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 59  27 Jan 2016
+ Lecture 11-3
+
+     CNN case study
+
+Sung Kim <hunkim+mr@gmail.com>
+      http://hunkim.github.io/ml/
+              Lecture 7:
+Convolutional Neural Networks
+
+http://cs231n.stanford.edu/
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 1  27 Jan 2016
+Case Study: LeNet-5
+
+  [LeCun et al., 1998]
+
+Conv filters were 5x5, applied at stride 1
+Subsampling (Pooling) layers were 2x2 applied at stride 2
+i.e. architecture is [CONV-POOL-CONV-POOL-CONV-FC]
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson              Lecture 7 - 60  27 Jan 2016
+Case Study: AlexNet
+
+[Krizhevsky et al. 2012]
+
+Input: 227x227x3 images
+First layer (CONV1): 96 11x11 filters applied at stride 4
+=>
+Output volume [55x55x96]
+Parameters: (11*11*3)*96 = 35K
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 63  27 Jan 2016
+Case Study: AlexNet
+
+[Krizhevsky et al. 2012]
+
+Input: 227x227x3 images
+After CONV1: 55x55x96
+Second layer (POOL1): 3x3 filters applied at stride 2
+Output volume: 27x27x96
+Parameters: 0!
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 66  27 Jan 2016
+Case Study: AlexNet
+
+[Krizhevsky et al. 2012]
+
+Input: 227x227x3 images
+After CONV1: 55x55x96
+After POOL1: 27x27x96
+...
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 67  27 Jan 2016
+Case Study: AlexNet                                    Lecture 7 - 68  27 Jan 2016
+
+ [Krizhevsky et al. 2012]
+
+Full (simplified) AlexNet architecture:
+[227x227x3] INPUT
+[55x55x96] CONV1: 96 11x11 filters at stride 4, pad 0
+[27x27x96] MAX POOL1: 3x3 filters at stride 2
+[27x27x96] NORM1: Normalization layer
+[27x27x256] CONV2: 256 5x5 filters at stride 1, pad 2
+[13x13x256] MAX POOL2: 3x3 filters at stride 2
+[13x13x256] NORM2: Normalization layer
+[13x13x384] CONV3: 384 3x3 filters at stride 1, pad 1
+[13x13x384] CONV4: 384 3x3 filters at stride 1, pad 1
+[13x13x256] CONV5: 256 3x3 filters at stride 1, pad 1
+[6x6x256] MAX POOL3: 3x3 filters at stride 2
+[4096] FC6: 4096 neurons
+[4096] FC7: 4096 neurons
+[1000] FC8: 1000 neurons (class scores)
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson
+Case Study: AlexNet
+
+[Krizhevsky et al. 2012]
+
+Full (simplified) AlexNet architecture:                Details/Retrospectives:
+[227x227x3] INPUT                                      - first use of ReLU
+[55x55x96] CONV1: 96 11x11 filters at stride 4, pad 0  - used Norm layers (not common anymore)
+[27x27x96] MAX POOL1: 3x3 filters at stride 2          - heavy data augmentation
+[27x27x96] NORM1: Normalization layer                  - dropout 0.5
+[27x27x256] CONV2: 256 5x5 filters at stride 1, pad 2  - batch size 128
+[13x13x256] MAX POOL2: 3x3 filters at stride 2         - SGD Momentum 0.9
+[13x13x256] NORM2: Normalization layer                 - Learning rate 1e-2, reduced by 10
+[13x13x384] CONV3: 384 3x3 filters at stride 1, pad 1  manually when val accuracy plateaus
+[13x13x384] CONV4: 384 3x3 filters at stride 1, pad 1  - L2 weight decay 5e-4
+[13x13x256] CONV5: 256 3x3 filters at stride 1, pad 1  - 7 CNN ensemble: 18.2% -> 15.4%
+[6x6x256] MAX POOL3: 3x3 filters at stride 2
+[4096] FC6: 4096 neurons                               Lecture 7 - 69  27 Jan 2016
+[4096] FC7: 4096 neurons
+[1000] FC8: 1000 neurons (class scores)
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson
+Case Study: GoogLeNet [Szegedy et al., 2014]
+
+Inception module
+
+ILSVRC 2014 winner (6.7% top 5 error)
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 75  27 Jan 2016
+Case Study: ResNet [He et al., 2015]
+                                               ILSVRC 2015 winner (3.6% top 5 error)
+
+Slide from Kaiming He's recent presentation https://www.youtube.com/watch?v=1PGLj-uKT1w
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 77  27 Jan 2016
+Case Study: ResNet [He et al., 2015]
+                                               ILSVRC 2015 winner (3.6% top 5 error)
+
+                                                                          2-3 weeks of training
+                                                                          on 8 GPU machine
+
+                                                                          at runtime: faster
+                                                                          than a VGGNet!
+                                                                          (even though it has
+                                                                          8x more layers)
+
+                   (slide from Kaiming He's recent presentation)  Lecture 7 - 80  27 Jan 2016
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson
+Case Study:        224x224x3
+ResNet
+                                               spatial dimension
+[He et al., 2015]                              only 56x56!
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 81  27 Jan 2016
+Case Study: ResNet [He et al., 2015]
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 82  27 Jan 2016
+Case Study: ResNet [He et al., 2015]
+
+(this trick is also used in GoogLeNet)
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 85  27 Jan 2016
+Convolutional Neural Networks for Sentence Classification
+                         [Yoon Kim, 2014]
+Case Study Bonus: DeepMind's AlphaGo
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 87  27 Jan 2016
+policy network:
+[19x19x48] Input
+CONV1: 192 5x5 filters , stride 1, pad 2 => [19x19x192]
+CONV2..12: 192 3x3 filters, stride 1, pad 1 => [19x19x192]
+CONV: 1 1x1 filter, stride 1, pad 0 => [19x19] (probability map of promising moves)
+
+Fei-Fei Li & Andrej Karpathy & Justin Johnson  Lecture 7 - 88  27 Jan 2016
+'The only limit is your imagination'
+
+       http://itchyi.squarespace.com/thelatest/2012/5/17/the-only-limit-is-your-imagination.html
+NeuRraNelceNuxrerttesn(tRNN)
+
