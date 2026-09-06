@@ -206,11 +206,6 @@
   .param-shift{display:flex;align-items:center;gap:.6vw;flex-wrap:wrap;background:var(--paper-sunken);border:1px solid var(--line);border-radius:.5vw;}
   .param-shift b{font-family:'JetBrains Mono',monospace;color:var(--accent);}
   .param-note{margin-left:auto;font-size:.78vw;color:var(--ink-soft);font-style:italic;}
-  .fc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1vw;}
-  .fc-card{background:var(--paper-raised);border:1px solid var(--line);border-radius:.6vw;padding:.8vw 1vw;box-shadow:var(--shadow);}
-  .fc-card .fc-name{font-weight:700;font-size:1vw;margin-bottom:.3vw;color:var(--ink);}
-  .fc-card .fc-desc{font-size:.78vw;color:var(--ink-soft);line-height:1.4;}
-  .fc-card .fc-desc code{font-family:'JetBrains Mono',monospace;background:var(--code-bg);padding:.05em .3em;border-radius:3px;}
 
   .cmp-table{border-collapse:collapse;width:100%;font-size:.95vw;background:var(--paper-raised);border:1px solid var(--line);border-radius:.5vw;overflow:hidden;box-shadow:var(--shadow);}
   .cmp-table th,.cmp-table td{padding:.55vw .9vw;text-align:left;border-bottom:1px solid var(--line);}
@@ -644,30 +639,14 @@
     <!-- 10: FC + SOFTMAX -->
     <section class="slide">
       <div class="slide-eyebrow">02 · 풀링과 분류</div>
-      <h2 class="slide-title">벡터로 바꾸는 <span class="accent">세 가지 방법</span></h2>
-      <div class="slide-body top">
-        <div class="fc-grid" style="margin-bottom:1.2%">
-          <div class="fc-card">
-            <div class="fc-name">Flatten</div>
-            <div class="fc-desc">H·W·C를 그대로 나열. 공간 정보 보존, 파라미터는 공간 크기에 비례해 폭증.</div>
-          </div>
-          <div class="fc-card">
-            <div class="fc-name">Global Avg Pooling</div>
-            <div class="fc-desc">채널별 평균 하나만 남김 → 길이 C. 공간 크기 무관, 파라미터 대폭 절감.</div>
-          </div>
-          <div class="fc-card">
-            <div class="fc-name">Global Max Pooling</div>
-            <div class="fc-desc">채널별 최댓값 하나만. "존재 여부"엔 유리, 나머지 위치정보는 버려짐.</div>
-          </div>
-        </div>
-        <div class="param-shift" style="font-size:.98vw;padding:.6% 1%">
-          <span>Flatten 6×6×256→FC4096 <b>약 3,780만</b></span>
-          <span class="flow-arrow">→</span>
-          <span>GAP 256→FC4096 <b>약 105만</b></span>
-          <span class="param-note">약 36배 차이</span>
-        </div>
-        <div class="lab-note" style="margin-top:.8%">AlexNet·VGG는 Flatten+FC, GoogLeNet 이후(GoogLeNet·ResNet·DenseNet)는 대부분 GAP — "GoogLeNet이 VGG보다 파라미터 95% 적은" 이유의 상당 부분이 여기서 나옵니다.</div>
-        <div class="formula-strip" style="margin-top:.8%">CONV+POOL = 특징 추출 &nbsp;→&nbsp; (Flatten 또는 GAP)+Softmax = 최종 분류 결정</div>
+      <h2 class="slide-title">Flatten → FC → <span class="accent">Softmax</span></h2>
+      <div class="slide-body">
+        <ul class="bullets">
+          <li>합성곱·풀링을 반복하면 작은 여러 장의 특징 맵이 남는다 (예: 3×3×10 = 90개 값).</li>
+          <li>3차원 출력을 한 줄 벡터로 펴는 과정이 <b>flatten</b>.</li>
+          <li>벡터를 완전연결층에 통과시키고, 클래스 수만큼 점수를 만든 뒤 <b>Softmax</b>로 확률 분포로 변환.</li>
+        </ul>
+        <div class="formula-strip">CONV+POOL = 특징 추출 &nbsp;→&nbsp; FC+Softmax = 최종 분류 결정</div>
       </div>
     </section>
 
