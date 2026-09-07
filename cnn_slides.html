@@ -1192,41 +1192,47 @@
       <div class="slide-eyebrow">라이브 데모</div>
       <h2 class="slide-title">이미지에 Sobel·Gaussian <span class="accent">직접 돌려보기</span></h2>
       <div class="slide-body top">
-        <div class="kernel-row" style="margin-bottom:1%">
-          <div class="kernel-card">
-            <h4>Sobel Gₓ</h4>
-            <div class="kernel-grid">
-              <div class="kernel-cell neg">-1</div><div class="kernel-cell">0</div><div class="kernel-cell pos">1</div>
-              <div class="kernel-cell neg">-2</div><div class="kernel-cell">0</div><div class="kernel-cell pos">2</div>
-              <div class="kernel-cell neg">-1</div><div class="kernel-cell">0</div><div class="kernel-cell pos">1</div>
-            </div>
-            <div class="kernel-note">아래 캔버스로 실제 적용 결과 확인</div>
+        <div class="lab-note" style="margin-bottom:.5%">아래 6×6 패치에 필터가 한 칸씩 슬라이딩하며 계산하는 과정을 실제 이미지로 보여줍니다 — <b>원본 캔버스를 클릭</b>하면 관찰할 위치를 옮길 수 있습니다.</div>
+        <div class="lab-controls" style="margin-bottom:.4%">
+          <span class="lab-label">필터 선택</span>
+          <label class="lab-radio"><input type="radio" name="lsMode" value="gx" checked> Sobel Gₓ</label>
+          <label class="lab-radio"><input type="radio" name="lsMode" value="gy"> Sobel Gᵧ</label>
+          <label class="lab-radio"><input type="radio" name="lsMode" value="gauss"> Gaussian</label>
+        </div>
+        <div class="conv-step-row">
+          <div class="conv-step-col">
+            <div class="cs-label">패치 6×6(밝기 0~9로 단순화)</div>
+            <div class="cs-grid cs-input" id="lsInput" style="width:9vw"></div>
           </div>
-          <div class="kernel-card">
-            <h4>Sobel Gᵧ</h4>
-            <div class="kernel-grid">
-              <div class="kernel-cell neg">-1</div><div class="kernel-cell neg">-2</div><div class="kernel-cell neg">-1</div>
-              <div class="kernel-cell">0</div><div class="kernel-cell">0</div><div class="kernel-cell">0</div>
-              <div class="kernel-cell pos">1</div><div class="kernel-cell pos">2</div><div class="kernel-cell pos">1</div>
-            </div>
-            <div class="kernel-note">Gₓ를 90도 돌린 형태</div>
+          <div class="cs-arrow">×</div>
+          <div class="conv-step-col">
+            <div class="cs-label" id="lsKernelLabel">Sobel Gₓ</div>
+            <div class="cs-grid cs-kernel" id="lsKernel" style="width:5vw"></div>
           </div>
-          <div class="kernel-card">
-            <h4>Sobel 크기로 합치기</h4>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:1.05vw;font-weight:700;color:var(--accent);text-align:center;margin:1.2vw 0">√(Gₓ² + Gᵧ²)</div>
-            <div class="kernel-note">같은 픽셀의 Gₓ·Gᵧ 두 채널 값을 한 번에 합쳐 값 하나로 — <b>1×1 conv</b>가 여러 채널을 픽셀별로 합쳐 채널 수를 줄이는 것과 같은 그림(다만 가중합이 아니라 고정된 √(a²+b²) 결합)</div>
+          <div class="cs-arrow">=</div>
+          <div class="conv-step-col">
+            <div class="cs-label">칸별 곱</div>
+            <div class="cs-grid cs-product" id="lsProduct" style="width:5vw"></div>
           </div>
-          <div class="kernel-card">
-            <h4>Gaussian — 디노이징</h4>
-            <div class="kernel-factor">× 1/16</div>
-            <div class="kernel-grid">
-              <div class="kernel-cell pos">1</div><div class="kernel-cell pos">2</div><div class="kernel-cell pos">1</div>
-              <div class="kernel-cell pos">2</div><div class="kernel-cell pos">4</div><div class="kernel-cell pos">2</div>
-              <div class="kernel-cell pos">1</div><div class="kernel-cell pos">2</div><div class="kernel-cell pos">1</div>
-            </div>
-            <div class="kernel-note">아래 캔버스로 실제 적용 결과 확인</div>
+          <div class="cs-arrow">Σ</div>
+          <div class="conv-step-col">
+            <div class="cs-label">합계</div>
+            <div class="cs-sum" id="lsSum">0</div>
+          </div>
+          <div class="cs-arrow">→</div>
+          <div class="conv-step-col">
+            <div class="cs-label">출력 4×4</div>
+            <div class="cs-grid cs-output" id="lsOutput" style="width:6.6vw"></div>
           </div>
         </div>
+        <div class="cs-controls">
+          <button class="lab-btn" id="lsReset">처음부터</button>
+          <button class="lab-btn" id="lsPrev">◀ 이전</button>
+          <button class="lab-btn lab-btn-primary" id="lsPlay">▶ 자동 재생</button>
+          <button class="lab-btn" id="lsNext">다음 ▶</button>
+          <span class="cs-step-indicator" id="lsStepLabel">1 / 16</span>
+        </div>
+        <div class="lab-note" id="lsCombine" style="margin:.4% 0"></div>
         <div class="lab-controls">
           <span class="lab-label">이미지 선택</span>
           <button class="lab-btn" data-sample="shapes">도형 샘플</button>
@@ -1349,7 +1355,7 @@
 <script>
 (function(){
   var WORK = 128, TRAIN = 64, KFILT = 6, KS = 3, LEAKY = 0.1;
-  var state = { gray128:null, gray64:null, targets:null, trainer:null, training:false, iter:0 };
+  var state = { gray128:null, gray64:null, targets:null, trainer:null, training:false, iter:0, lsRow:61, lsCol:61 };
   var currentTarget = 'edge';
   var trainTimer = null;
 
@@ -1566,7 +1572,7 @@
   function processImageFromCanvas(srcCanvas){
     var ctx = srcCanvas.getContext('2d');
     state.gray128 = toGray(ctx, WORK, WORK);
-    drawFloat(els.cvOriginal, state.gray128, WORK, WORK, 'gray');
+    drawOriginalWithMarker();
 
     var gx = convolveSame(state.gray128,WORK,WORK,SOBEL_X,3,3);
     var gy = convolveSame(state.gray128,WORK,WORK,SOBEL_Y,3,3);
@@ -1590,6 +1596,7 @@
     state.targets = {edge:mag64, blur:blur64};
 
     resetTrainer();
+    refreshLiveStep();
   }
 
   function drawTarget(){ drawFloat(els.cvTarget, state.targets[currentTarget], TRAIN, TRAIN, 'gray'); }
@@ -1689,6 +1696,175 @@
     els.labLoss.textContent='loss –';
     drawTarget();
   }
+
+  var LS_N = 6, LS_OUT = LS_N-2;
+  var lsMode = 'gx', lsStep = 0, lsPlaying = false, lsTimer = null;
+  var lsEls = {
+    input: document.getElementById('lsInput'),
+    kernel: document.getElementById('lsKernel'),
+    kernelLabel: document.getElementById('lsKernelLabel'),
+    product: document.getElementById('lsProduct'),
+    sum: document.getElementById('lsSum'),
+    output: document.getElementById('lsOutput'),
+    combine: document.getElementById('lsCombine'),
+    stepLabel: document.getElementById('lsStepLabel'),
+    prev: document.getElementById('lsPrev'),
+    next: document.getElementById('lsNext'),
+    play: document.getElementById('lsPlay'),
+    reset: document.getElementById('lsReset')
+  };
+
+  function lsBuildGrid(container, n){
+    container.innerHTML='';
+    var cells=[];
+    for(var i=0;i<n;i++){
+      var cell=document.createElement('div');
+      cell.className='cs-cell';
+      container.appendChild(cell);
+      cells.push(cell);
+    }
+    return cells;
+  }
+  var lsInputCells = lsBuildGrid(lsEls.input, LS_N*LS_N);
+  var lsKernelCells = lsBuildGrid(lsEls.kernel, 9);
+  var lsProductCells = lsBuildGrid(lsEls.product, 9);
+  var lsOutputCells = lsBuildGrid(lsEls.output, LS_OUT*LS_OUT);
+
+  function lsGrayBg(v){ var b=Math.round(30+(v/9)*200); return 'rgb('+b+','+b+','+b+')'; }
+
+  function drawOriginalWithMarker(){
+    drawFloat(els.cvOriginal, state.gray128, WORK, WORK, 'gray');
+    var ctx = els.cvOriginal.getContext('2d');
+    var warm = cssColor('--accent-warm');
+    ctx.strokeStyle = 'rgb('+warm[0]+','+warm[1]+','+warm[2]+')';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(state.lsCol+0.5, state.lsRow+0.5, LS_N, LS_N);
+  }
+
+  function lsQuantizePatch(){
+    var q=[];
+    for(var i=0;i<LS_N;i++){
+      var row=[];
+      for(var j=0;j<LS_N;j++){
+        var v = state.gray128[(state.lsRow+i)*WORK + (state.lsCol+j)];
+        row.push(Math.round(clamp(v,0,1)*9));
+      }
+      q.push(row);
+    }
+    return q;
+  }
+
+  var LS_KERNELS = {
+    gx: [[-1,0,1],[-2,0,2],[-1,0,1]],
+    gy: [[-1,-2,-1],[0,0,0],[1,2,1]],
+    gauss: [[1,2,1],[2,4,2],[1,2,1]]
+  };
+  var LS_LABELS = { gx:'Sobel Gₓ', gy:'Sobel Gᵧ', gauss:'Gaussian(×1/16)' };
+
+  function lsComputeAt(q, k, r, c){
+    var s=0;
+    for(var i=0;i<3;i++) for(var j=0;j<3;j++) s += q[r+i][c+j]*k[i][j];
+    return s;
+  }
+
+  function lsRender(){
+    if(!state.gray128) return;
+    var q = lsQuantizePatch();
+    var k = LS_KERNELS[lsMode];
+    var r = Math.floor(lsStep/LS_OUT), c = lsStep%LS_OUT;
+
+    for(var i=0;i<LS_N;i++){
+      for(var j=0;j<LS_N;j++){
+        var cell = lsInputCells[i*LS_N+j];
+        var v = q[i][j];
+        cell.textContent = v;
+        cell.style.background = lsGrayBg(v);
+        cell.style.color = v>4 ? '#1a2430' : '#f2f2f0';
+        cell.classList.toggle('active', i>=r && i<r+3 && j>=c && j<c+3);
+      }
+    }
+    lsEls.kernelLabel.textContent = LS_LABELS[lsMode];
+    for(var ki=0;ki<3;ki++){
+      for(var kj=0;kj<3;kj++){
+        var kv=k[ki][kj], kc=lsKernelCells[ki*3+kj];
+        kc.textContent = kv;
+        kc.classList.remove('pos','neg');
+        if(kv<0) kc.classList.add('neg'); else if(kv>0) kc.classList.add('pos');
+      }
+    }
+
+    var total=0;
+    for(var i2=0;i2<3;i2++){
+      for(var j2=0;j2<3;j2++){
+        var pv = q[r+i2][c+j2]*k[i2][j2];
+        total+=pv;
+        var pc=lsProductCells[i2*3+j2];
+        pc.textContent=pv;
+        pc.classList.remove('pos','neg');
+        if(pv>0) pc.classList.add('pos'); else if(pv<0) pc.classList.add('neg');
+      }
+    }
+    var shown = lsMode==='gauss' ? (total/16) : total;
+    lsEls.sum.textContent = lsMode==='gauss' ? (total+'÷16='+shown.toFixed(1)) : total;
+
+    for(var s=0;s<LS_OUT*LS_OUT;s++){
+      var oc=lsOutputCells[s];
+      oc.classList.remove('current-output','pos','neg','empty');
+      if(s<lsStep){
+        var rr=Math.floor(s/LS_OUT), cc=s%LS_OUT;
+        var val=lsComputeAt(q,k,rr,cc);
+        if(lsMode==='gauss') val/=16;
+        oc.textContent = lsMode==='gauss' ? val.toFixed(1) : val;
+        if(val>0) oc.classList.add('pos'); else if(val<0) oc.classList.add('neg');
+      } else if(s===lsStep){
+        oc.textContent = lsMode==='gauss' ? shown.toFixed(1) : total;
+        oc.classList.add('current-output');
+        if(total>0) oc.classList.add('pos'); else if(total<0) oc.classList.add('neg');
+      } else {
+        oc.textContent='?'; oc.classList.add('empty');
+      }
+    }
+    lsEls.stepLabel.textContent = (lsStep+1)+' / '+(LS_OUT*LS_OUT);
+    lsEls.prev.disabled = (lsStep===0);
+    lsEls.next.disabled = (lsStep===LS_OUT*LS_OUT-1);
+
+    var gxV = lsComputeAt(q, LS_KERNELS.gx, r, c);
+    var gyV = lsComputeAt(q, LS_KERNELS.gy, r, c);
+    var mag = Math.sqrt(gxV*gxV+gyV*gyV);
+    lsEls.combine.innerHTML = '이 위치에서 Gₓ='+gxV+', Gᵧ='+gyV+' → Sobel 크기 √(Gₓ²+Gᵧ²) = '+mag.toFixed(2)+
+      ' — <b>1×1 conv</b>가 여러 채널을 픽셀별로 합쳐 채널 수를 줄이는 것과 같은 그림(다만 학습된 가중합이 아니라 고정된 √(a²+b²) 결합)';
+  }
+
+  function lsStop(){ lsPlaying=false; if(lsTimer){clearInterval(lsTimer);lsTimer=null;} lsEls.play.textContent='▶ 자동 재생'; }
+  function lsStart(){
+    if(lsStep>=LS_OUT*LS_OUT-1) lsStep=0;
+    lsPlaying=true; lsEls.play.textContent='⏸ 정지';
+    lsTimer=setInterval(function(){
+      if(lsStep>=LS_OUT*LS_OUT-1){ lsStop(); return; }
+      lsStep++; lsRender();
+    }, 700);
+  }
+  lsEls.prev.addEventListener('click', function(){ if(lsStep>0){ lsStep--; lsRender(); lsStop(); } });
+  lsEls.next.addEventListener('click', function(){ if(lsStep<LS_OUT*LS_OUT-1){ lsStep++; lsRender(); lsStop(); } });
+  lsEls.reset.addEventListener('click', function(){ lsStep=0; lsRender(); lsStop(); });
+  lsEls.play.addEventListener('click', function(){ if(lsPlaying) lsStop(); else lsStart(); });
+  document.querySelectorAll('input[name="lsMode"]').forEach(function(r){
+    r.addEventListener('change', function(){ lsMode=this.value; lsStep=0; lsRender(); lsStop(); });
+  });
+
+  els.cvOriginal.style.cursor='crosshair';
+  els.cvOriginal.addEventListener('click', function(e){
+    if(!state.gray128) return;
+    var rect = els.cvOriginal.getBoundingClientRect();
+    var x = (e.clientX-rect.left)/rect.width*WORK;
+    var y = (e.clientY-rect.top)/rect.height*WORK;
+    state.lsCol = clamp(Math.round(x-LS_N/2), 0, WORK-LS_N);
+    state.lsRow = clamp(Math.round(y-LS_N/2), 0, WORK-LS_N);
+    drawOriginalWithMarker();
+    lsStep=0; lsRender(); lsStop();
+  });
+
+  function refreshLiveStep(){ lsStep=0; lsRender(); lsStop(); }
 
   document.querySelectorAll('.lab-btn[data-sample]').forEach(function(btn){
     btn.addEventListener('click', function(){
